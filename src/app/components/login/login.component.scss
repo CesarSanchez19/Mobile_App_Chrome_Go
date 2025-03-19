@@ -124,15 +124,16 @@ ion-input.custom-input {
 
 /* Casilla "Recordarme" */
 .remember-container {
-  margin-top: 14px;
+  margin-top: 25px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
+  gap: 3rem; 
 }
-
+// 
 .checkbox-container {
-  padding-top: 8px;
+  padding-top: .1em;
   display: flex;
   align-items: center;
 }
@@ -178,7 +179,7 @@ ion-input.custom-input {
 
 /* Enlace de "Olvidaste tu contraseña" */
 .forgot-link {
-  padding-top: 3px;
+  padding-top: .1em;
   color: #1D61E7;
   font-size: 14px;
   text-decoration: none;
