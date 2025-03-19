@@ -1,3 +1,96 @@
-<p>
-  login works!
-</p>
+<div class="login-container">
+  <!-- Encabezado con logo -->
+  <div class="app-header">
+    <div class="app-logo">
+      <ion-icon name="camera"></ion-icon>
+      ChromeGo
+    </div>
+  </div>
+
+  <!-- Tarjeta de inicio de sesión -->
+  <div class="login-card">
+    <h1 class="login-title">Iniciar Sesión</h1>
+
+    <p class="no-account">
+      ¿No tienes una cuenta?
+      <a class="register-link" (click)="irARegistro()" href="javascript:void(0)"
+        >Regístrate</a
+      >
+    </p>
+
+    <form (ngSubmit)="onSubmit()">
+      <!-- Campo de correo electrónico -->
+      <label class="form-label">Correo electrónico</label>
+      <div class="input-wrapper">
+        <ion-input
+          class="custom-input"
+          placeholder="Ingrese su correo electrónico"
+          type="email"
+          [(ngModel)]="email"
+          name="email"
+          required
+        ></ion-input>
+      </div>
+
+      <!-- Campo de contraseña -->
+      <label class="form-label">Contraseña</label>
+      <div class="input-wrapper">
+        <ion-input
+          class="custom-input password-input"
+          [type]="showPassword ? 'text' : 'password'"
+          placeholder="Ingrese su contraseña"
+          [(ngModel)]="password"
+          name="password"
+          required
+        ></ion-input>
+        <button
+          type="button"
+          class="password-toggle right-toggle"
+          (click)="togglePasswordVisibility()"
+          tabindex="-1"
+          aria-label="Mostrar/ocultar contraseña"
+        >
+          <ion-icon
+            [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+          ></ion-icon>
+        </button>
+      </div>
+
+      <!-- Recordarme y olvidaste tu contraseña -->
+      <div class="remember-container">
+        <div class="checkbox-container">
+          <div
+            class="custom-checkbox"
+            [ngClass]="{ 'checked': rememberMe }"
+            (click)="rememberMe = !rememberMe">
+          </div>
+          <span class="checkbox-label">Recordarme</span>
+        </div>
+
+        <a class="forgot-link" href="javascript:void(0)"
+          >¿Olvidaste tu contraseña?</a
+        >
+      </div>
+
+      <!-- Botón de inicio de sesión -->
+      <button class="login-button" type="submit">Iniciar Sesión</button>
+
+      <!-- Separador o -->
+      <div class="separator">o</div>
+
+      <!-- Inicio de sesión con Google -->
+      <button
+        class="google-button"
+        type="button"
+        (click)="continuarConGoogle()"
+      >
+        <img
+          class="google-icon"
+          src="https://static.vecteezy.com/system/resources/previews/022/613/027/non_2x/google-icon-logo-symbol-free-png.png"
+          alt="Google"
+        />
+        Continuar con Google
+      </button>
+    </form>
+  </div>
+</div>
