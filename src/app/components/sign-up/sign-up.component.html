@@ -1,3 +1,198 @@
-<p>
-  sign-up works!
-</p>
+<div class="signup-container">
+  <div class="header">
+    <button class="back-button" title="Volver atrás" aria-label="Volver atrás">
+      <ion-icon name="arrow-back-outline" (click)="iraInicioSesion()"></ion-icon>
+    </button>
+    <h1>Regístrate</h1>
+  </div>
+
+  <div class="login-prompt">
+    <p>¿Ya tienes una cuenta? <a [routerLink]="['/login']">Inicia Sesión</a></p>
+  </div>
+  <div class="form-card">
+    <form (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Ingresa tu nombre completo">
+      </div>
+      <div class="form-group">
+        <input type="text" class="form-control" placeholder="Elige un nombre de usuario">
+      </div>
+      <div class="form-group">
+        <input type="email" class="form-control" placeholder="Ingresa tu correo electrónico">
+      </div>
+
+      <!-- Campo que muestra la fecha seleccionada -->
+      <div class="form-group">
+        <div class="input-with-icon">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Selecciona tu fecha de nacimiento"
+            [(ngModel)]="selectedDate"
+            name="birthdate"
+            readonly
+            (click)="openDateModal()"
+          />
+          <ion-icon name="calendar-outline" class="input-icon" (click)="openDateModal()" title="Abrir calendario" aria-label="Abrir calendario"></ion-icon>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="phone-input">
+          <div class="country-code" (click)="openCountryModal()">
+            <span class="country-flag">
+              <img
+                [src]="getCountryFlagUrl(selectedCountry.flag)"
+                alt="{{selectedCountry.name}}"
+                class="flag-image"
+              />
+            </span>
+            <span class="country-dial-code">+{{selectedCountry.code}}</span>
+            <ion-icon name="chevron-down-outline" class="chevron-icon" aria-label="Seleccionar país"></ion-icon>
+          </div>
+          <input type="tel" class="form-control phone" placeholder="Ingresa tu número de teléfono">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="input-with-icon">
+          <input [type]="hidePassword ? 'password' : 'text'" class="form-control" placeholder="Ingresa tu contraseña">
+          <ion-icon
+            [name]="hidePassword ? 'eye-outline' : 'eye-off-outline'"
+            class="input-icon"
+            (click)="togglePasswordVisibility('password')"
+            [attr.title]="hidePassword ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+            [attr.aria-label]="hidePassword ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+          ></ion-icon>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="input-with-icon">
+          <input [type]="hideConfirmPassword ? 'password' : 'text'" class="form-control" placeholder="Repite tu contraseña">
+          <ion-icon
+            [name]="hideConfirmPassword ? 'eye-outline' : 'eye-off-outline'"
+            class="input-icon"
+            (click)="togglePasswordVisibility('confirmPassword')"
+            [attr.title]="hideConfirmPassword ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+            [attr.aria-label]="hideConfirmPassword ? 'Mostrar contraseña' : 'Ocultar contraseña'"
+          ></ion-icon>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-register" (click)="iraHome()">Registrarse</button>
+      </div>
+      <div class="separator">
+        <span>o</span>
+      </div>
+      <div class="google-login">
+        <button type="button" class="btn btn-google" (click)="continuarConGoogle()">
+          <img
+            src="https://static.vecteezy.com/system/resources/previews/022/613/027/non_2x/google-icon-logo-symbol-free-png.png"
+            alt="Google"
+            class="google-icon"
+          />
+          Continuar con Google
+        </button>
+      </div>
+    </form>
+  </div>
+
+<!-- Modal para selector de países -->
+<ion-modal [isOpen]="showCountrySelector" (didDismiss)="closeCountryModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar color="light">
+        <ion-buttons slot="start">
+          <ion-button (click)="closeCountryModal()" color="dark" title="Cerrar selector de países" aria-label="Cerrar selector de países">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title color="dark">Seleccionar país</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding country-modal-content">
+      <ion-searchbar
+        placeholder="Buscar país"
+        [(ngModel)]="countrySearch"
+        showCancelButton="never"
+        class="custom-blue-searchbar"
+      ></ion-searchbar>
+      <ion-list class="custom-list">
+        <ion-item
+          *ngFor="let country of filteredCountries"
+          (click)="selectCountry(country)"
+          button
+          class="custom-item"
+        >
+          <span class="country-flag">
+            <img
+              [src]="getCountryFlagUrl(country.flag)"
+              alt="{{country.name}}"
+              class="flag-image"
+            />
+          </span>
+          <ion-label>{{country.name}}</ion-label>
+          <ion-note slot="end" color="medium">+{{country.code}}</ion-note>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+  <!-- Modal para selector de fecha (actualizado) -->
+  <div class="calendar-container" *ngIf="showDatePicker">
+    <div class="calendar-header">
+      <button class="back-button" (click)="closeDateModal()" title="Cerrar calendario" aria-label="Cerrar selector de fecha">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <h2>Seleccionar fecha</h2>
+    </div>
+
+    <div class="date-picker">
+      <div class="date-header">
+        <div class="header-title">SELECCIONAR FECHA</div>
+        <div class="selected-date">{{formattedDateDisplay}}</div>
+      </div>
+
+      <div class="month-selector">
+        <span class="month-year">{{currentMonthYear}}</span>
+        <div class="navigation-arrows">
+          <button class="nav-arrow" (click)="previousMonth()" title="Mes anterior" aria-label="Mes anterior">
+            <ion-icon name="chevron-back-outline"></ion-icon>
+          </button>
+          <button class="nav-arrow" (click)="nextMonth()" title="Mes siguiente" aria-label="Mes siguiente">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="weekday-header">
+          <div class="weekday">D</div>
+          <div class="weekday">L</div>
+          <div class="weekday">M</div>
+          <div class="weekday">X</div>
+          <div class="weekday">J</div>
+          <div class="weekday">V</div>
+          <div class="weekday">S</div>
+        </div>
+
+        <div class="days-grid">
+          <div *ngFor="let day of calendarDays"
+               class="day-cell"
+               [ngClass]="{'current-month': day.currentMonth, 'selected': day.selected, 'today': day.today}"
+               (click)="selectDate(day)">
+            <span>{{day.day}}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="calendar-actions">
+        <button class="cancel-btn" (click)="cancelDateSelection()">CANCELAR</button>
+        <button class="accept-btn" (click)="confirmDateSelection()">ACEPTAR</button>
+      </div>
+    </div>
+  </div>
+</div>
