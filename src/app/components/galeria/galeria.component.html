@@ -1,3 +1,65 @@
-<p>
-  galeria works!
-</p>
+<div class="main">
+  <div class="galeria-segment">
+    <ion-segment class="custom" value="historial">
+      <ion-segment-button class="button-custom" value="historial" content-id="historial">
+        <ion-label>Historial</ion-label>
+      </ion-segment-button>
+      <ion-segment-button class="button-custom" value="categorias" content-id="categorias">
+        <ion-label>Mis categorías</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- Vistas -->
+    <ion-segment-view>
+
+      <!-- Historial -->
+      <ion-segment-content id="historial">
+        aqui van tus cosas ivan
+      </ion-segment-content>
+
+      <!-- Mis categorías -->
+      <ion-segment-content id="categorias">
+        <!-- Buscador -->
+        <ion-searchbar show-clear-button="focus" class="bar-custom"
+          placeholder="Buscar una categoría específica..."></ion-searchbar>
+
+        <!-- Button -->
+        <div class="button-container">
+          <ion-button>Crear Categoría</ion-button>
+        </div>
+
+        <!-- Acordion -->
+        <div class="accordion-container">
+          <ion-accordion-group>
+
+            <!-- Acordion 1 -->
+            <ion-accordion value="favoritos" toggleIconSlot="start">
+              <ion-item slot="header">
+                <ion-label>Favoritos ⭐</ion-label>
+              </ion-item>
+              <div class="ion-padding" slot="content">Contenido Favoritos</div>
+            </ion-accordion>
+
+            <!-- Acordion 2 -->
+            <ion-accordion value="asthetic" toggleIconSlot="start">
+              <ion-item slot="header">
+                <ion-label>Asthenic</ion-label>
+              </ion-item>
+              <div class="ion-padding" slot="content">Contenido Asthenic</div>
+            </ion-accordion>
+
+            <!-- Acordion 3 -->
+            <ion-accordion value="brillante" toggleIconSlot="start">
+              <ion-item slot="header">
+                <ion-label>Brillante</ion-label>
+              </ion-item>
+              <div class="ion-padding" slot="content">Contenido Brillante</div>
+            </ion-accordion>
+
+          </ion-accordion-group>
+        </div>
+      </ion-segment-content>
+    </ion-segment-view>
+  </div>
+
+</div>

@@ -12,4 +12,12 @@ export class GaleriaComponent  implements OnInit {
 
   ngOnInit() {}
 
+  segmentChanged(){
+    console.log('Segment changed');
+  }
+
+  onSearchChange(){
+    console.log('Search changed');
+  }
+
 }
