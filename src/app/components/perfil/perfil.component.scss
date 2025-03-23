@@ -1,0 +1,35 @@
+.button {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    width: 279px;
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 24px;
+    position: relative;
+    background-color: rgba(255, 255, 255, 1.0);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid;
+    border-color: transparent;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0) 100%
+    );
+}
+
+.button .label-text {
+    position: relative;
+    width: fit-content;
+    font-family: "Inter-Medium", Helvetica;
+    font-weight: 500;
+    color: var(--primary-0);
+    font-size: 12px;
+    text-align: center;
+    letter-spacing: -0.12px;
+    line-height: 16.8px;
+    white-space: nowrap;
+}
