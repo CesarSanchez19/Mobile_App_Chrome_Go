@@ -12,6 +12,8 @@ import { GaleriaComponent } from './components/galeria/galeria.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { InicioComponent } from './components/inicio/inicio.component';
+import { ReactiveFormsModule } from '@angular/forms';
+
 
 @NgModule({
   declarations: [
@@ -26,7 +28,8 @@ import { InicioComponent } from './components/inicio/inicio.component';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent]
