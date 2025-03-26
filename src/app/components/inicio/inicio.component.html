@@ -1,4 +1,4 @@
-<video id="bg-video" autoplay muted></video>
+<video id="bg-video" autoplay muted *ngIf="!isNative"></video>
 <div class="main">
   <div class="inicio_content">
     <!-- Section: Toolbar del inicio -->
@@ -30,7 +30,7 @@
       </ion-fab-button>
     </ion-fab>
 
-    <!-- Input oculto para acceder a la galería/archivos -->
+    <!-- Input oculto para acceder a la galería/archivos en versión web -->
     <input
       type="file"
       accept="image/*"

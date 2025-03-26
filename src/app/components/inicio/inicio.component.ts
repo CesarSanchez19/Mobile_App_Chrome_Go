@@ -1,4 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Platform, ToastController } from '@ionic/angular';
+// Importamos el plugin de Capacitor para cámara
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 @Component({
   selector: 'app-inicio',
@@ -10,19 +13,36 @@ export class InicioComponent implements OnInit, OnDestroy {
   stream: MediaStream | null = null;
   currentFacingMode: string = 'environment'; // Cámara trasera por defecto
   flashOn: boolean = false;
+  // Variable para almacenar la imagen capturada o seleccionada
+  image: string | undefined;
+  // Determina si se está en un entorno nativo (celular)
+  isNative: boolean = false;
 
-  constructor() {}
+  constructor(private platform: Platform, private toastCtrl: ToastController) {
+    // Se considera nativo si es 'hybrid' o Android/iOS
+    this.isNative = this.platform.is('hybrid') || this.platform.is('android') || this.platform.is('ios');
+  }
 
   ngOnInit() {
-    this.startCamera();
+    if (!this.isNative) {
+      this.startCamera();
+    }
   }
 
   ngOnDestroy() {
-    this.stopCamera();
+    if (!this.isNative) {
+      this.stopCamera();
+    }
   }
 
   /**
-   * Inicia la cámara usando la constraint de 'facingMode'
+   * =============================
+   * Funciones para versión WEB
+   * =============================
+   */
+
+  /**
+   * Inicia la cámara usando getUserMedia (web)
    */
   startCamera() {
     if (navigator.mediaDevices?.getUserMedia) {
@@ -48,7 +68,7 @@ export class InicioComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Detiene la cámara
+   * Detiene la cámara (web)
    */
   stopCamera() {
     if (this.stream) {
@@ -58,53 +78,9 @@ export class InicioComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Abre la galería o explorador de archivos para seleccionar una imagen
+   * Captura una foto del video en web
    */
-  openGallery() {
-    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-    if (fileInput) {
-      fileInput.click();
-    }
-  }
-
-  /**
-   * Activa o desactiva el flash (torch) si el dispositivo lo soporta
-   * (funcionalidad experimental, no en todos los navegadores)
-   */
-  toggleFlash() {
-    if (this.stream) {
-      const videoTrack = this.stream.getVideoTracks()[0];
-      if (videoTrack) {
-        const capabilities = videoTrack.getCapabilities?.();
-        // Verifica si se soporta 'torch'
-        if (capabilities && (capabilities as any).torch !== undefined) {
-          this.flashOn = !this.flashOn;
-          videoTrack
-            .applyConstraints({
-              advanced: [{ torch: this.flashOn } as any]
-            })
-            .catch((err) => console.error('Error al cambiar el flash:', err));
-        } else {
-          console.warn('El dispositivo no soporta el flash.');
-        }
-      }
-    }
-  }
-
-  /**
-   * Alterna entre la cámara trasera y la frontal
-   */
-  switchCamera() {
-    this.currentFacingMode =
-      this.currentFacingMode === 'environment' ? 'user' : 'environment';
-    this.stopCamera();
-    this.startCamera();
-  }
-
-  /**
-   * Captura una foto del video de fondo
-   */
-  capturePhoto() {
+  capturePhotoWeb() {
     const video = document.getElementById('bg-video') as HTMLVideoElement;
     if (video) {
       const canvas = document.createElement('canvas');
@@ -113,25 +89,143 @@ export class InicioComponent implements OnInit, OnDestroy {
       const context = canvas.getContext('2d');
       if (context) {
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const dataUrl = canvas.toDataURL('image/png');
-        console.log('Foto capturada:', dataUrl);
-        // Aquí puedes agregar la lógica para usar la imagen (mostrarla, subirla, etc.)
+        this.image = canvas.toDataURL('image/png');
+        console.log('Foto capturada:', this.image);
       }
     }
   }
 
   /**
-   * Maneja la selección de imagen desde la galería o explorador de archivos
+   * =============================
+   * Funciones para versión Nativa (Capacitor)
+   * =============================
+   */
+
+  /**
+   * Captura una foto usando el plugin de Capacitor (celular)
+   */
+  async capturePhotoNative() {
+    try {
+      const photo = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Camera
+      });
+      this.image = photo.webPath;
+      console.log('Foto capturada (nativo):', this.image);
+    } catch (error) {
+      console.error('Error al capturar foto (nativo):', error);
+    }
+  }
+
+  /**
+   * Selecciona una imagen desde la galería usando Capacitor (celular)
+   */
+  async openGalleryNative() {
+    try {
+      const photo = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Photos
+      });
+      this.image = photo.webPath;
+      console.log('Imagen seleccionada (nativo):', this.image);
+    } catch (error) {
+      console.error('Error al seleccionar imagen (nativo):', error);
+    }
+  }
+
+  /**
+   * =============================
+   * Funciones Comunes
+   * =============================
+   */
+
+  /**
+   * Captura foto: según el entorno, usa método nativo o web.
+   */
+  capturePhoto() {
+    if (this.isNative) {
+      this.capturePhotoNative();
+    } else {
+      this.capturePhotoWeb();
+    }
+  }
+
+  /**
+   * Abre la galería o explorador de archivos para seleccionar una imagen.
+   * En móvil se usa el plugin, en web se simula el click en el input.
+   */
+  openGallery() {
+    if (this.isNative) {
+      this.openGalleryNative();
+    } else {
+      const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.click();
+      }
+    }
+  }
+
+  /**
+   * Maneja la selección de imagen desde la galería (web)
    */
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        console.log('Imagen seleccionada:', e.target?.result);
-        // Aquí puedes agregar la lógica para usar la imagen
+        console.log('Imagen seleccionada (web):', e.target?.result);
+        this.image = e.target?.result as string;
       };
       reader.readAsDataURL(file);
+    }
+  }
+
+  /**
+   * Activa o desactiva el flash (torch) si el dispositivo lo soporta en web.
+   * En móvil se muestra advertencia ya que el plugin no provee esta funcionalidad.
+   */
+  async toggleFlash() {
+    if (!this.isNative && this.stream) {
+      const videoTrack = this.stream.getVideoTracks()[0];
+      if (videoTrack) {
+        const capabilities = videoTrack.getCapabilities?.();
+        if (capabilities && (capabilities as any).torch !== undefined) {
+          this.flashOn = !this.flashOn;
+          // Se castea el objeto de constraints a any para incluir la propiedad "torch"
+          videoTrack.applyConstraints({ advanced: [{ torch: this.flashOn }] } as any)
+            .catch((err) => console.error('Error al cambiar el flash:', err));
+        } else {
+          console.warn('El dispositivo no soporta el flash.');
+        }
+      }
+    } else {
+      const toast = await this.toastCtrl.create({
+        message: 'Funcionalidad de flash no soportada en modo nativo.',
+        duration: 2000
+      });
+      toast.present();
+    }
+  }
+
+  /**
+   * Alterna entre la cámara trasera y la frontal (solo web).
+   * En modo nativo se recomienda usar la interfaz propia del plugin.
+   */
+  async switchCamera() {
+    if (!this.isNative) {
+      this.currentFacingMode = this.currentFacingMode === 'environment' ? 'user' : 'environment';
+      this.stopCamera();
+      this.startCamera();
+    } else {
+      const toast = await this.toastCtrl.create({
+        message: 'Cambiar cámara en modo nativo debe hacerse mediante la interfaz propia del plugin.',
+        duration: 2000
+      });
+      toast.present();
     }
   }
 }

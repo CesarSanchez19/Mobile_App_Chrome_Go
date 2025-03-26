@@ -1,4 +1,4 @@
-package io.ionic.starter;
+package com.chromego.app;
 
 import com.getcapacitor.BridgeActivity;
 
