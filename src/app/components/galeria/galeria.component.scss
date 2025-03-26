@@ -122,3 +122,45 @@ ion-item {
     border-radius: 15px !important;
     font-weight: bold;
 }
+
+
+ion-modal {
+    --border-radius: 30px;
+}
+
+@media (max-width: 768px) {
+    ion-modal {
+        --height: 50%;
+    }
+}
+
+ion-title.title-custom {
+    font-weight: bold;
+    text-align: center;
+}
+
+ion-label.label-custom {
+    color: #7c7c7c;
+}
+
+ion-input.input-custom {
+    --border-radius: 10px !important;
+    --background: transparent !important;
+    --box-shadow: none !important;
+    margin-top: 8px;
+    overflow: hidden;
+    width: 100%;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+    margin-bottom: 0;
+    padding: 0;
+}
+
+.button-container {
+    margin-top: 25px;
+    margin-bottom: 25px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; /* Alinea el contenido al final (derecha) */
+    align-items: center; /* Alinea verticalmente al centro */
+}
