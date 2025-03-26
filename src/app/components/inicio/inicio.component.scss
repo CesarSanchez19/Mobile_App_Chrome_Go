@@ -27,36 +27,31 @@
   border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.665);
 
-  // Asegurar que todos los íconos sean blancos
   ion-icon {
     color: white;
   }
 
-  ion-icon :hover {
+  ion-icon:hover {
     color: aqua;
   }
 
-  // Efectos de hover y active para los botones de segmento
   ion-segment-button {
-    // Estilos base
     --color: rgb(33, 182, 250);
     --color-checked: rgb(44, 215, 246);
 
-    // Efecto de hover
     &:hover {
-      background-color: rgba(33, 150, 243, 0.3); // Azul vivo semi-transparente
+      background-color: rgba(33, 150, 243, 0.3);
       color: aqua;
     }
 
-    // Efecto de selección (click)
     &.segment-button-checked {
-      background-color: rgba(33, 150, 243, 0.5); // Azul vivo más intenso
+      background-color: rgba(33, 150, 243, 0.5);
       color: aqua;
     }
   }
 }
 
-/* Posicionamiento del botón */
+/* Posicionamiento del botón principal (FAB) */
 ion-fab {
   margin: 0 auto;
   align-content: center;
@@ -64,15 +59,12 @@ ion-fab {
   left: 50%;
   transform: translate(-50%, -50%);
 
-  // Efectos para el botón de escaneo
   ion-fab-button {
     width: 80px;
     height: 80px;
-    // Gradient background matching the icon's color
     --background: linear-gradient(to bottom, #2CD7F6, #0066CC);
     --background-activated: linear-gradient(to bottom, #0066CC, #2CD7F6);
 
-    // Hover effect with slight color variation
     &:hover {
       --background: linear-gradient(to bottom, #2CD7F6, #0077DD);
     }
@@ -82,10 +74,18 @@ ion-fab {
 /* Estilos del icono de escaneo */
 .bi-upc-scan {
   width: 3rem;
-  color: rgb(255, 255, 255); // Asegurar color blanco
+  color: rgb(255, 255, 255);
 }
 
-// Responsive adjustments
+/* Ocultamos completamente el input de archivos */
+#fileInput {
+  display: none !important;
+  position: absolute;
+  left: -9999px;
+  visibility: hidden;
+}
+
+/* Ajustes responsive */
 @media screen and (max-width: 768px) {
   .toolbar_container {
     max-width: 95%;
