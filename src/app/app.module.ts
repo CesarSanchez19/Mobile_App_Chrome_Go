@@ -1,9 +1,7 @@
 // app.module.ts
-import { NgModule } from '@angular/core';
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core'; // Asegúrate de importar CUSTOM_ELEMENTS_SCHEMA
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms'; // Asegúrate de que ReactiveFormsModule esté aquí
@@ -51,9 +49,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore())
   ],
-  bootstrap: [AppComponent] // Agregado para indicar el componente raíz
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent], // Agregado para indicar el componente raíz
   schemas: [CUSTOM_ELEMENTS_SCHEMA] // Asegúrate de que esto esté aquí
 })
 export class AppModule { }
