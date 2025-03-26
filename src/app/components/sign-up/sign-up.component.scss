@@ -12,7 +12,6 @@
   margin-top: 16px;
 }
 
-
 .header {
   display: flex;
   align-items: center;
@@ -67,8 +66,8 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   margin-bottom: 1rem;
   z-index: 1;
-  max-height: 80vh; /* Altura máxima relativa a la pantalla (se eliminara en la fase de pruebas */
-  overflow-y: auto; /* Habilitar el scroll vertical (se eliminara en la fase de pruebas */
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
 .form-group {
@@ -240,31 +239,17 @@ ion-item {
   }
 
   ion-label {
-    color: black !important; // Forzar color negro
+    color: black !important;
   }
 }
 
-// Modificar los estilos para el modal de países y la barra de búsqueda
-ion-searchbar.custom-blue-searchbar {
-  --background: white;
-  --border-radius: 10px;
-  --box-shadow: none;
-  --color: #000000;
-  --placeholder-color: #000000;
-  --icon-color: #1a73e8;
-  border: 2px solid #1a73e8;
-  margin-bottom: 10px;
-
-  &::part(search-icon) {
-    color: #1a73e8;
-  }
-
-  &::part(cancel-button) {
-    color: #1a73e8;
-  }
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
 }
 
-// Cambiar el tema general del modal a claro
+/* Modal para selector de países */
 ion-modal {
   --background: white;
 
@@ -274,7 +259,7 @@ ion-modal {
   }
 
   ion-content {
-    --background: white
+    --background: white;
   }
 
   .country-modal-content {
@@ -292,7 +277,7 @@ ion-modal {
   }
 }
 
-// Estilos para el calendario personalizado
+/* Modal para selector de fecha (calendario) */
 .calendar-container {
   position: fixed;
   top: 0;
@@ -381,7 +366,6 @@ ion-modal {
   }
 }
 
-// Estilos para el selector de mes/año
 .month-year-selector {
   display: flex;
   flex-direction: column;
@@ -464,9 +448,8 @@ ion-modal {
     border-radius: 50%;
     font-size: 0.9rem;
     color: #333;
-    /* Solución compatible para aspect-ratio:1 */
     width: 100%;
-    padding-top: 100%; /* Esto crea un cuadrado perfecto */
+    padding-top: 100%;
   }
 
   .day-cell span {

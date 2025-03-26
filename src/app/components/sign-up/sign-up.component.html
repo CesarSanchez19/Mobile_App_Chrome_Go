@@ -12,16 +12,16 @@
   <div class="form-card">
     <form (ngSubmit)="onSubmit()">
       <div class="form-group">
-        <input type="text" class="form-control" placeholder="Ingresa tu nombre completo">
+        <input type="text" class="form-control" placeholder="Ingresa tu nombre completo" [(ngModel)]="fullName" name="fullName" required>
       </div>
       <div class="form-group">
-        <input type="text" class="form-control" placeholder="Elige un nombre de usuario">
+        <input type="text" class="form-control" placeholder="Elige un nombre de usuario" [(ngModel)]="username" name="username" required>
       </div>
       <div class="form-group">
-        <input type="email" class="form-control" placeholder="Ingresa tu correo electrónico">
+        <input type="email" class="form-control" placeholder="Ingresa tu correo electrónico" [(ngModel)]="email" name="email" required>
       </div>
 
-      <!-- Campo que muestra la fecha seleccionada -->
+      <!-- Campo de fecha de nacimiento -->
       <div class="form-group">
         <div class="input-with-icon">
           <input
@@ -50,13 +50,13 @@
             <span class="country-dial-code">+{{selectedCountry.code}}</span>
             <ion-icon name="chevron-down-outline" class="chevron-icon" aria-label="Seleccionar país"></ion-icon>
           </div>
-          <input type="tel" class="form-control phone" placeholder="Ingresa tu número de teléfono">
+          <input type="tel" class="form-control phone" placeholder="Ingresa tu número de teléfono" [(ngModel)]="phone" name="phone">
         </div>
       </div>
 
       <div class="form-group">
         <div class="input-with-icon">
-          <input [type]="hidePassword ? 'password' : 'text'" class="form-control" placeholder="Ingresa tu contraseña">
+          <input [type]="hidePassword ? 'password' : 'text'" class="form-control" placeholder="Ingresa tu contraseña" [(ngModel)]="password" name="password" required>
           <ion-icon
             [name]="hidePassword ? 'eye-outline' : 'eye-off-outline'"
             class="input-icon"
@@ -69,7 +69,7 @@
 
       <div class="form-group">
         <div class="input-with-icon">
-          <input [type]="hideConfirmPassword ? 'password' : 'text'" class="form-control" placeholder="Repite tu contraseña">
+          <input [type]="hideConfirmPassword ? 'password' : 'text'" class="form-control" placeholder="Repite tu contraseña" [(ngModel)]="confirmPassword" name="confirmPassword" required>
           <ion-icon
             [name]="hideConfirmPassword ? 'eye-outline' : 'eye-off-outline'"
             class="input-icon"
@@ -80,8 +80,13 @@
         </div>
       </div>
 
+      <!-- Mensaje de error del registro -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
       <div class="form-group">
-        <button type="submit" class="btn btn-register" (click)="iraHome()">Registrarse</button>
+        <button type="submit" class="btn btn-register">Registrarse</button>
       </div>
       <div class="separator">
         <span>o</span>
@@ -99,49 +104,49 @@
     </form>
   </div>
 
-<!-- Modal para selector de países -->
-<ion-modal [isOpen]="showCountrySelector" (didDismiss)="closeCountryModal()">
-  <ng-template>
-    <ion-header>
-      <ion-toolbar color="light">
-        <ion-buttons slot="start">
-          <ion-button (click)="closeCountryModal()" color="dark" title="Cerrar selector de países" aria-label="Cerrar selector de países">
-            <ion-icon name="arrow-back-outline"></ion-icon>
-          </ion-button>
-        </ion-buttons>
-        <ion-title color="dark">Seleccionar país</ion-title>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content class="ion-padding country-modal-content">
-      <ion-searchbar
-        placeholder="Buscar país"
-        [(ngModel)]="countrySearch"
-        showCancelButton="never"
-        class="custom-blue-searchbar"
-      ></ion-searchbar>
-      <ion-list class="custom-list">
-        <ion-item
-          *ngFor="let country of filteredCountries"
-          (click)="selectCountry(country)"
-          button
-          class="custom-item"
-        >
-          <span class="country-flag">
-            <img
-              [src]="getCountryFlagUrl(country.flag)"
-              alt="{{country.name}}"
-              class="flag-image"
-            />
-          </span>
-          <ion-label>{{country.name}}</ion-label>
-          <ion-note slot="end" color="medium">+{{country.code}}</ion-note>
-        </ion-item>
-      </ion-list>
-    </ion-content>
-  </ng-template>
-</ion-modal>
+  <!-- Modal para selector de países -->
+  <ion-modal [isOpen]="showCountrySelector" (didDismiss)="closeCountryModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar color="light">
+          <ion-buttons slot="start">
+            <ion-button (click)="closeCountryModal()" color="dark" title="Cerrar selector de países" aria-label="Cerrar selector de países">
+              <ion-icon name="arrow-back-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <ion-title color="dark">Seleccionar país</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding country-modal-content">
+        <ion-searchbar
+          placeholder="Buscar país"
+          [(ngModel)]="countrySearch"
+          showCancelButton="never"
+          class="custom-blue-searchbar"
+        ></ion-searchbar>
+        <ion-list class="custom-list">
+          <ion-item
+            *ngFor="let country of filteredCountries"
+            (click)="selectCountry(country)"
+            button
+            class="custom-item"
+          >
+            <span class="country-flag">
+              <img
+                [src]="getCountryFlagUrl(country.flag)"
+                alt="{{country.name}}"
+                class="flag-image"
+              />
+            </span>
+            <ion-label>{{country.name}}</ion-label>
+            <ion-note slot="end" color="medium">+{{country.code}}</ion-note>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 
-  <!-- Modal para selector de fecha (actualizado) -->
+  <!-- Modal para selector de fecha -->
   <div class="calendar-container" *ngIf="showDatePicker">
     <div class="calendar-header">
       <button class="back-button" (click)="closeDateModal()" title="Cerrar calendario" aria-label="Cerrar selector de fecha">
@@ -149,13 +154,11 @@
       </button>
       <h2>Seleccionar fecha</h2>
     </div>
-
     <div class="date-picker">
       <div class="date-header">
         <div class="header-title">SELECCIONAR FECHA</div>
         <div class="selected-date">{{formattedDateDisplay}}</div>
       </div>
-
       <div class="month-selector">
         <span class="month-year">{{currentMonthYear}}</span>
         <div class="navigation-arrows">
@@ -167,7 +170,6 @@
           </button>
         </div>
       </div>
-
       <div class="calendar-grid">
         <div class="weekday-header">
           <div class="weekday">D</div>
@@ -178,7 +180,6 @@
           <div class="weekday">V</div>
           <div class="weekday">S</div>
         </div>
-
         <div class="days-grid">
           <div *ngFor="let day of calendarDays"
                class="day-cell"
@@ -188,7 +189,6 @@
           </div>
         </div>
       </div>
-
       <div class="calendar-actions">
         <button class="cancel-btn" (click)="cancelDateSelection()">CANCELAR</button>
         <button class="accept-btn" (click)="confirmDateSelection()">ACEPTAR</button>
