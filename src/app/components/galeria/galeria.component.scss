@@ -123,6 +123,21 @@ ion-item {
     font-weight: bold;
 }
 
+.rounded-card {
+    border: 2px solid white; /* Contorno blanco */
+    border-radius: 15px; /* Esquinas redondeadas */
+    background-color: transparent; /* Fondo transparente para ver el contorno */
+    padding: 10px; /* Espaciado interno */
+  }
+  
+  .color-box {
+    width: 20px; /* Ancho del cuadrado */
+    height: 20px; /* Alto del cuadrado */
+    background-color: #ff0000; /* Color del cuadrado (rojo en este caso) */
+    display: inline-block; /* Para que se alinee con el texto */
+    margin-right: 10px; /* Espacio entre el cuadrado y el texto */
+  }
+
 
 ion-modal {
     --border-radius: 30px;

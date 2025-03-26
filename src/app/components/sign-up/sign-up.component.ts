@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { IonModal, ModalController, IonDatetime } from '@ionic/angular';
 import { Router } from '@angular/router';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
+import firebase from 'firebase/compat/app';
 
 interface Country {
   name: string;
@@ -19,13 +21,24 @@ export class SignUpComponent implements OnInit {
   @ViewChild('dateModal') dateModal!: IonModal;
   @ViewChild('datetime') datetime!: IonDatetime;
 
+  // Campos del formulario
+  fullName: string = '';
+  username: string = '';
+  email: string = '';
+  phone: string = '';
+  password: string = '';
+  confirmPassword: string = '';
+
+  // Variables para mostrar u ocultar contraseñas
   hidePassword = true;
   hideConfirmPassword = true;
+
+  // Variables para el selector de país
   showCountrySelector = false;
   selectedCountry: Country = { name: 'México', code: '52', flag: 'mx' };
   countrySearch = '';
 
-  // Variables para el calendario
+  // Variables para el selector de fecha (fecha de nacimiento)
   selectedDate: string = '';
   dateValue: any = null;
   showDatePicker = false;
@@ -52,7 +65,6 @@ export class SignUpComponent implements OnInit {
     { name: 'Costa Rica', code: '506', flag: 'cr' },
   ];
 
-  // Nombres de los meses en español
   mesesEnEspanol = [
     'enero',
     'febrero',
@@ -68,9 +80,13 @@ export class SignUpComponent implements OnInit {
     'diciembre',
   ];
 
+  // Mensaje de error para el registro
+  errorMessage: string = '';
+
   constructor(
     private modalController: ModalController,
-    private router: Router
+    private router: Router,
+    private afAuth: AngularFireAuth
   ) {}
 
   ngOnInit() {
@@ -86,11 +102,16 @@ export class SignUpComponent implements OnInit {
   }
 
   continuarConGoogle() {
-    // Manejar autenticación de Google
-    console.log('Intento de inicio de sesión con Google');
-
-    // Navegar al home después del inicio de sesión con Google exitoso
-    this.router.navigate(['/home']);
+    // Registro usando Google
+    this.afAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .then(userCredential => {
+        console.log('Registro con Google exitoso:', userCredential);
+        this.router.navigate(['/home']);
+      })
+      .catch(error => {
+        console.error('Error en registro con Google:', error);
+        this.errorMessage = 'Error: ' + error.message;
+      });
   }
 
   togglePasswordVisibility(field: 'password' | 'confirmPassword') {
@@ -101,7 +122,7 @@ export class SignUpComponent implements OnInit {
     }
   }
 
-  // Modal de países
+  // Métodos para el modal de países
   openCountryModal() {
     this.showCountrySelector = true;
     this.countrySearch = '';
@@ -128,17 +149,15 @@ export class SignUpComponent implements OnInit {
     );
   }
 
-  // Método para abrir el modal de fecha (faltaba en el código original)
+  // Métodos para el modal de fecha
   openDateModal() {
     this.showDatePicker = true;
   }
 
-  // Método para cerrar el modal de fecha (faltaba en el código original)
   closeDateModal() {
     this.showDatePicker = false;
   }
 
-  // Método para cancelar la selección de fecha (faltaba en el código original)
   cancelDateSelection() {
     this.showDatePicker = false;
   }
@@ -146,17 +165,11 @@ export class SignUpComponent implements OnInit {
   generateCalendar() {
     const year = this.selectedCalendarDate.getFullYear();
     const month = this.selectedCalendarDate.getMonth();
-
-    // Primer día del mes
     const firstDay = new Date(year, month, 1);
-    // Último día del mes
     const lastDay = new Date(year, month + 1, 0);
-
-    // Array para almacenar todos los días del calendario
     const days = [];
 
-    // Agregar días del mes anterior para completar la primera semana
-    const firstDayOfWeek = firstDay.getDay(); // 0 = Domingo, 1 = Lunes, etc.
+    const firstDayOfWeek = firstDay.getDay();
     const prevMonthLastDay = new Date(year, month, 0).getDate();
 
     for (let i = firstDayOfWeek - 1; i >= 0; i--) {
@@ -168,7 +181,6 @@ export class SignUpComponent implements OnInit {
       });
     }
 
-    // Agregar días del mes actual
     const today = new Date();
     for (let i = 1; i <= lastDay.getDate(); i++) {
       const currentDate = new Date(year, month, i);
@@ -180,7 +192,6 @@ export class SignUpComponent implements OnInit {
       });
     }
 
-    // Agregar días del próximo mes para completar la última semana
     const remainingDays = 7 - (days.length % 7);
     if (remainingDays < 7) {
       for (let i = 1; i <= remainingDays; i++) {
@@ -207,27 +218,19 @@ export class SignUpComponent implements OnInit {
     const month = this.mesesEnEspanol[this.selectedCalendarDate.getMonth()];
     const year = this.selectedCalendarDate.getFullYear();
     this.currentMonthYear = `${month} de ${year}`;
-
     const day = this.selectedCalendarDate.getDate();
     this.formattedDateDisplay = `${day} de ${month}`;
   }
 
   selectDate(day: any) {
     if (!day.currentMonth) return;
-
-    // Deseleccionar el día anterior
     this.calendarDays.forEach(d => d.selected = false);
-
-    // Seleccionar el nuevo día
     day.selected = true;
-
-    // Actualizar la fecha seleccionada
     this.selectedCalendarDate = new Date(
       this.selectedCalendarDate.getFullYear(),
       this.selectedCalendarDate.getMonth(),
       day.day
     );
-
     this.updateMonthYearDisplay();
   }
 
@@ -257,8 +260,106 @@ export class SignUpComponent implements OnInit {
     this.showDatePicker = false;
   }
 
+  // Método para registrar el usuario en Firebase
   onSubmit() {
-    console.log('Formulario enviado');
+    // Reinicia el mensaje de error
+    this.errorMessage = '';
+
+    // Validación de campos vacíos
+    if (!this.fullName && !this.username && !this.email && !this.selectedDate && !this.phone && !this.password && !this.confirmPassword) {
+      this.errorMessage = 'Por favor, completa todos los campos.';
+      return;
+    }
+    if (!this.fullName) {
+      this.errorMessage = 'Por favor, ingresa tu nombre completo.';
+      return;
+    }
+    if (!this.username) {
+      this.errorMessage = 'Por favor, ingresa un nombre de usuario.';
+      return;
+    }
+    if (!this.email) {
+      this.errorMessage = 'Por favor, ingresa tu correo electrónico.';
+      return;
+    }
+    if (!this.selectedDate) {
+      this.errorMessage = 'Por favor, selecciona tu fecha de nacimiento.';
+      return;
+    }
+    if (!this.phone) {
+      this.errorMessage = 'Por favor, ingresa tu número de teléfono.';
+      return;
+    }
+    if (!this.password) {
+      this.errorMessage = 'Por favor, ingresa una contraseña.';
+      return;
+    }
+    if (!this.confirmPassword) {
+      this.errorMessage = 'Por favor, repite tu contraseña.';
+      return;
+    }
+    if (this.password !== this.confirmPassword) {
+      this.errorMessage = 'Las contraseñas no coinciden.';
+      return;
+    }
+
+    // Validación de formatos
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.email)) {
+      this.errorMessage = 'El correo electrónico no tiene un formato válido.';
+      return;
+    }
+    const usernameRegex = /^[a-zA-Z0-9]+$/;
+    if (!usernameRegex.test(this.username)) {
+      this.errorMessage = 'El nombre de usuario debe contener solo letras y números, sin espacios.';
+      return;
+    }
+    const phoneRegex = /^[0-9]+$/;
+    if (!phoneRegex.test(this.phone)) {
+      this.errorMessage = 'El número de teléfono solo debe contener dígitos.';
+      return;
+    }
+    if (this.password.length < 6) {
+      this.errorMessage = 'La contraseña debe tener al menos 6 caracteres.';
+      return;
+    }
+
+    // Crear usuario en Firebase
+    this.afAuth.createUserWithEmailAndPassword(this.email, this.password)
+      .then(userCredential => {
+        console.log('Registro exitoso:', userCredential);
+        if (userCredential.user) {
+          // Actualizar el perfil del usuario con el nombre completo
+          userCredential.user.updateProfile({
+            displayName: this.fullName
+          }).then(() => {
+            // Opcional: Aquí se puede guardar información adicional en Firestore si se requiere.
+            this.router.navigate(['/home']);
+          }).catch(error => {
+            console.error('Error al actualizar el perfil:', error);
+            this.errorMessage = 'Error al actualizar el perfil. Intenta nuevamente.';
+          });
+        } else {
+          this.router.navigate(['/home']);
+        }
+      })
+      .catch(error => {
+        console.error('Error en registro:', error);
+        switch (error.code) {
+          case 'auth/invalid-email':
+            this.errorMessage = 'El correo electrónico está mal escrito, por favor introdúcelo correctamente.';
+            break;
+          case 'auth/email-already-in-use':
+            this.errorMessage = 'El correo electrónico ya está en uso.';
+            break;
+          case 'auth/weak-password':
+            this.errorMessage = 'La contraseña es muy débil, por favor elige una contraseña más fuerte.';
+            break;
+          default:
+            this.errorMessage = 'Error en registro: ' + error.message;
+            break;
+        }
+      });
   }
 
   // Obtiene la URL de la bandera del país
