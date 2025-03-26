@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { UserService } from 'src/app/services/user.service';
+import { AccountUserService } from 'src/app/services/account-user.service';
+import { Users } from 'src/app/interfaces/users';
 
 interface Country {
   name: string;
@@ -61,6 +63,7 @@ export class SignUpComponent implements OnInit {
   constructor(
     private router: Router,
     private userService: UserService,
+    private accountUserService: AccountUserService,
     private fb: FormBuilder
   ) {
     // Inicialización del formulario con validadores
@@ -216,7 +219,7 @@ export class SignUpComponent implements OnInit {
     this.closeDateModal();
   }
 
-  // Registro del usuario
+  // Registro del usuario y guardado en Firestore
   async onSubmit() {
     this.errorMessage = '';
     if (this.formReg.invalid) {
@@ -224,10 +227,25 @@ export class SignUpComponent implements OnInit {
       return;
     }
     try {
-      const { fullName, username, email, phone, birthday, password } = this.formReg.value;
-      // Se usa el servicio para registrar con email y contraseña
+      const { fullName, username, email, phone, birthday, password, confirmPassword } = this.formReg.value;
+      // Registro en Firebase Auth (correo y contraseña)
       const userCredential = await this.userService.register({ email, password });
       console.log('Usuario registrado:', userCredential.user);
+
+      // Crear objeto de usuario para Firestore
+      const userData: Users = {
+        fullName,
+        username,
+        email,
+        phone,
+        birthday,
+        password,
+        confirmPassword
+      };
+
+      // Guardar datos del usuario en Firestore
+      await this.accountUserService.addUser(userData);
+
       this.router.navigate(['/home']);
     } catch (error: any) {
       console.error('Error en el registro:', error);
@@ -252,6 +270,8 @@ export class SignUpComponent implements OnInit {
     try {
       const userCredential = await this.userService.signInWithGoogle();
       console.log('Usuario registrado con Google:', userCredential.user);
+      // Opcional: Si deseas guardar también en Firestore los datos de usuarios que se registren con Google,
+      // deberás extraer la información necesaria desde userCredential.user y llamar a accountUserService.addUser().
       this.router.navigate(['/home']);
     } catch (error: any) {
       console.error('Error al iniciar sesión con Google:', error);
@@ -264,7 +284,7 @@ export class SignUpComponent implements OnInit {
     return `https://flagcdn.com/48x36/${countryCode.toLowerCase()}.png`;
   }
 
-  // Navegación (si requieres volver al login)
+  // Navegación (volver al login)
   iraInicioSesion() {
     this.router.navigate(['/login']);
   }

@@ -16,6 +16,7 @@ import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { InicioComponent } from './components/inicio/inicio.component';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
+import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,19 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
     ReactiveFormsModule,
     HttpClientModule,
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, provideFirebaseApp(() => initializeApp({ projectId: "chrome-go-c87ce", appId: "1:789896777211:web:63197c45321b298d2a4f5e", storageBucket: "chrome-go-c87ce.firebasestorage.app", apiKey: "AIzaSyBDaJY8VFf0qTYG4CperxfH5ch3MmeQrd0", authDomain: "chrome-go-c87ce.firebaseapp.com", messagingSenderId: "789896777211" })), provideAuth(() => getAuth())],
-  bootstrap: [AppComponent]
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    provideFirebaseApp(() => initializeApp({
+      projectId: "chrome-go-c87ce",
+      appId: "1:789896777211:web:63197c45321b298d2a4f5e",
+      storageBucket: "chrome-go-c87ce.firebasestorage.app",
+      apiKey: "AIzaSyBDaJY8VFf0qTYG4CperxfH5ch3MmeQrd0",
+      authDomain: "chrome-go-c87ce.firebaseapp.com",
+      messagingSenderId: "789896777211"
+    })),
+    provideAuth(() => getAuth()),
+    provideFirestore(() => getFirestore())
+  ],
+  bootstrap: [AppComponent] // Agregado para indicar el componente raíz
 })
 export class AppModule { }
