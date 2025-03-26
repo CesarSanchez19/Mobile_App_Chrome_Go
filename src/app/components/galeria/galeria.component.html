@@ -210,18 +210,18 @@
   <ng-template>
     <ion-header>
       <ion-toolbar>
-        <ion-title>Crear Nueva Categoría</ion-title>
-        <ion-buttons slot="end">
-          <ion-button (click)="closeModal()">Cancelar</ion-button>
-        </ion-buttons>
+        <ion-title class="title-custom">Crear Nueva Categoría</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <ion-item>
-        <ion-label position='floating'>Nombre de la nueva categoría</ion-label>
-        <ion-input [(ngModel)]="nuevaCategoria"></ion-input>
+        <ion-label class="label-custom" position='floating'>Nombre de la nueva categoría</ion-label>
+        <ion-input class="input-custom" [(ngModel)]="nuevaCategoria"></ion-input>
       </ion-item>
-      <ion-button expand="full" (click)="crearCategoria()">Crear</ion-button>
+      <div class="button-container">
+      <ion-button class="crear-button" (click)="crearCategoria()">Crear</ion-button>
+      <ion-button class="cancelar-button" (click)="closeModal()">Cancelar</ion-button>
+    </div>
     </ion-content>
   </ng-template>
 </ion-modal>

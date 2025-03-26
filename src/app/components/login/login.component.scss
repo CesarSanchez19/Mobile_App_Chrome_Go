@@ -1,4 +1,3 @@
-/* Estilos del contenedor global */
 .login-container {
   display: flex;
   flex-direction: column;
@@ -6,7 +5,6 @@
   background: linear-gradient(180deg, #1a75d2 0%, #00BCD4 100%);
 }
 
-/* Estilos del encabezado */
 .app-header {
   display: flex;
   align-items: center;
@@ -27,48 +25,42 @@
   font-size: 40px;
 }
 
-/* Contenedor de la tarjeta */
 .login-card {
   background-color: white;
   border-radius: 12px;
   margin: 0 16px;
   padding: 30px 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-height: 80vh; /* Altura máxima relativa a la pantalla */
-  overflow-y: auto; /* Habilitar el scroll vertical */
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-/* Personalización de la barra de desplazamiento (se elimara en la fase beta */
 .login-card::-webkit-scrollbar {
-  width: 6px; /* Ancho de la barra */
+  width: 6px;
 }
 
 .login-card::-webkit-scrollbar-thumb {
-  background: #375DFB; /* Color del scroll */
+  background: #375DFB;
   border-radius: 3px;
 }
 
 .login-card::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Color del fondo de la barra */
+  background: #f1f1f1;
 }
 
-/* Título */
 .login-title {
   font-size: 32px;
   font-weight: bold;
   margin-bottom: 8px;
-  text-align: left;
-  color: #222;
   text-align: center;
+  color: #222;
 }
 
-/* Texto de "no tienes cuenta" y enlace de registro */
 .no-account {
   font-size: 14px;
   color: #666;
-  text-align: left;
-  margin-bottom: 25px;
   text-align: center;
+  margin-bottom: 25px;
 }
 
 .register-link {
@@ -77,7 +69,6 @@
   font-weight: 500;
 }
 
-/* Campos del formulario */
 .form-label {
   padding-top: 15px;
   display: block;
@@ -87,12 +78,10 @@
   font-weight: 500;
 }
 
-
-/* Estilos del campo de entrada con borde azul */
 .custom-input {
   width: 100%;
-  border: 2px solid #375DFB !important; /* Borde azul */
-  border-radius: 6px !important; /* Bordes redondeados */
+  border: 2px solid #375DFB !important;
+  border-radius: 6px !important;
   padding: 15px;
   font-size: 14px;
   outline: none;
@@ -100,7 +89,6 @@
   color: #333;
 }
 
-/* Ajustes específicos para ion-input */
 ion-input.custom-input {
   --border-color: #375DFB !important;
   --border-width: 2px !important;
@@ -116,24 +104,22 @@ ion-input.custom-input {
   --color: #333;
 }
 
-/* Asegurar que el input no pierda su borde cuando esté en foco */
 .custom-input:focus {
   border-color: #1a3fd2 !important;
   box-shadow: 0 0 5px rgba(55, 93, 251, 0.5);
 }
 
-/* Casilla "Recordarme" */
 .remember-container {
   margin-top: 25px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 25px;
-  gap: 3rem; 
+  gap: 3rem;
 }
-// 
+
 .checkbox-container {
-  padding-top: .1em;
+  padding-top: 0.1em;
   display: flex;
   align-items: center;
 }
@@ -141,9 +127,9 @@ ion-input.custom-input {
 .custom-checkbox {
   width: 20px;
   height: 20px;
-  border: 2px solid #375DFB !important; /* Borde azul */
-  border-radius: 6px !important; /* Bordes redondeados */
-  background: white !important; /* Fondo blanco */
+  border: 2px solid #375DFB !important;
+  border-radius: 6px !important;
+  background: white !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -151,21 +137,18 @@ ion-input.custom-input {
   cursor: pointer;
 }
 
-/* Cuando el checkbox está marcado */
 .custom-checkbox.checked {
-  background: #375DFB !important; /* Fondo azul */
-  border-color: #375DFB !important; /* Mantener borde azul */
+  background: #375DFB !important;
+  border-color: #375DFB !important;
 }
 
-/* Icono del check */
 .custom-checkbox::after {
-  content: '\2713'; /* Símbolo de check */
+  content: '\2713';
   font-size: 16px;
-  color: white; /* Check en blanco */
+  color: white;
   display: none;
 }
 
-/* Mostrar el check cuando está marcado */
 .custom-checkbox.checked::after {
   display: block;
 }
@@ -177,15 +160,13 @@ ion-input.custom-input {
   color: grey;
 }
 
-/* Enlace de "Olvidaste tu contraseña" */
 .forgot-link {
-  padding-top: .1em;
+  padding-top: 0.1em;
   color: #1D61E7;
   font-size: 14px;
   text-decoration: none;
 }
 
-/* Botón de inicio de sesión */
 .login-button {
   background-color: #1D61E7;
   color: white;
@@ -200,7 +181,6 @@ ion-input.custom-input {
   box-shadow: 0 2px 6px rgba(33, 150, 243, 0.3);
 }
 
-/* Separador "o" */
 .separator {
   display: flex;
   align-items: center;
@@ -225,7 +205,6 @@ ion-input.custom-input {
   margin-left: 10px;
 }
 
-/* Botón de Google */
 .google-button {
   display: flex;
   align-items: center;
@@ -251,7 +230,6 @@ ion-input.custom-input {
   width: 100%;
 }
 
-/* Estilos para el botón de mostrar/ocultar contraseña */
 .password-toggle {
   background: transparent;
   border: none;
@@ -261,19 +239,91 @@ ion-input.custom-input {
   z-index: 10;
 }
 
-/* Posicionamiento para el ícono a la derecha pero dentro del input */
 .right-toggle {
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
 }
 
-/* Ajuste del padding para el input de contraseña para dejar espacio al ícono */
 .password-input {
   --padding-end: 40px !important;
 }
 
-/* Aseguramos que el input-wrapper tenga posición relativa */
-.input-wrapper {
-  position: relative;
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
 }
+
+/* Estilos para el modal de "Olvidé mi contraseña" */
+.forgot-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.forgot-modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.forgot-title {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.forgot-description {
+  font-size: 14px;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.forgot-error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.forgot-success-message {
+  color: green;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.cancel-button,
+.send-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.cancel-button {
+  background-color: #ccc;
+  color: #333;
+}
+
+.send-button {
+  background-color: #1D61E7;
+  color: white;
+}
+

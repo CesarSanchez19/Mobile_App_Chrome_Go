@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { Auth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-login',
@@ -12,37 +13,105 @@ export class LoginComponent implements OnInit {
   password: string = '';
   rememberMe: boolean = false;
   showPassword: boolean = false;
+  errorMessage: string = '';
 
-  constructor(private router: Router) { }
+  // Variables para el modal "Olvidé mi contraseña"
+  showForgotModal: boolean = false;
+  forgotEmail: string = '';
+  forgotErrorMessage: string = '';
+  forgotSuccessMessage: string = '';
 
-  ngOnInit() {
+  constructor(
+    private router: Router,
+    private auth: Auth
+  ) {}
+
+  ngOnInit(): void {}
+
+  async onSubmit() {
+    this.errorMessage = '';
+
+    // Validaciones locales
+    if (!this.email || !this.password) {
+      this.errorMessage = 'Por favor, ingresa tu correo electrónico y contraseña.';
+      return;
+    }
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(this.auth, this.email, this.password);
+      console.log('Usuario autenticado:', userCredential.user);
+      this.router.navigate(['/home']);
+    } catch (error: any) {
+      console.error('Error al iniciar sesión:', error);
+      switch (error.code) {
+        case 'auth/user-not-found':
+          this.errorMessage = 'El usuario no existe.';
+          break;
+        case 'auth/wrong-password':
+          this.errorMessage = 'Contraseña incorrecta.';
+          break;
+        case 'auth/invalid-email':
+          this.errorMessage = 'El correo electrónico no es válido.';
+          break;
+        default:
+          this.errorMessage = 'Error al iniciar sesión. Intenta nuevamente.';
+      }
+    }
   }
 
-  onSubmit() {
-    // Lógica de inicio de sesión aquí
-    console.log('Intento de inicio de sesión', {
-      email: this.email,
-      password: this.password,
-      rememberMe: this.rememberMe
-    });
-
-    // Navegar al home después del inicio de sesión exitoso
-    this.router.navigate(['/home']);
-  }
-
-  continuarConGoogle() {
-    // Manejar autenticación de Google
-    console.log('Intento de inicio de sesión con Google');
-
-    // Navegar al home después del inicio de sesión con Google exitoso
-    this.router.navigate(['/home']);
-  }
-
-  irARegistro() {
-    this.router.navigate(['/signup']);
+  async continuarConGoogle() {
+    try {
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(this.auth, provider);
+      console.log('Usuario autenticado con Google:', userCredential.user);
+      this.router.navigate(['/home']);
+    } catch (error: any) {
+      console.error('Error al iniciar sesión con Google:', error);
+      this.errorMessage = 'Error al iniciar sesión con Google. Intenta nuevamente.';
+    }
   }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
+  }
+
+  // Navegar a la página de registro
+  irARegistro() {
+    this.router.navigate(['/signup']);
+  }
+
+  // Métodos para el modal "Olvidé mi contraseña"
+  openForgotModal() {
+    this.showForgotModal = true;
+    this.resetForgotPasswordFields();
+  }
+
+  closeForgotModal() {
+    this.showForgotModal = false;
+    this.resetForgotPasswordFields();
+  }
+
+  private resetForgotPasswordFields() {
+    this.forgotEmail = '';
+    this.forgotErrorMessage = '';
+    this.forgotSuccessMessage = '';
+  }
+
+  async enviarResetPassword() {
+    this.forgotErrorMessage = '';
+    this.forgotSuccessMessage = '';
+
+    if (!this.forgotEmail) {
+      this.forgotErrorMessage = 'Por favor, ingresa tu correo electrónico.';
+      return;
+    }
+
+    try {
+      await sendPasswordResetEmail(this.auth, this.forgotEmail);
+      this.forgotSuccessMessage = 'Se ha enviado un enlace para restablecer la contraseña a tu correo.';
+    } catch (error: any) {
+      console.error('Error al enviar email de reseteo:', error);
+      this.forgotErrorMessage = 'No se pudo enviar el enlace de reseteo. Intenta nuevamente.';
+    }
   }
 }
