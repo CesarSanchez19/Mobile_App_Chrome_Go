@@ -66,6 +66,8 @@ ion-fab {
 
   // Efectos para el botón de escaneo
   ion-fab-button {
+    width: 80px;
+    height: 80px;
     // Gradient background matching the icon's color
     --background: linear-gradient(to bottom, #2CD7F6, #0066CC);
     --background-activated: linear-gradient(to bottom, #0066CC, #2CD7F6);
@@ -79,7 +81,7 @@ ion-fab {
 
 /* Estilos del icono de escaneo */
 .bi-upc-scan {
-  width: 2em;
+  width: 3rem;
   color: rgb(255, 255, 255); // Asegurar color blanco
 }
 
