@@ -1,0 +1,50 @@
+.main {
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: start;
+  // align-items: center;
+  background-color: rgb(115 114 114 / 0.349); /* Fondo gris del contenedor principal */
+  padding: 10px;
+  height: 100%;
+  width: 100%;
+}
+
+
+//*  Estilos del Toolbar
+
+.toolbar_container {
+  margin: 0 auto;
+  align-content: center;
+  max-width: 97%;
+  margin-top: 5vh;
+  border-radius: 10px;
+  background-color: rgb(0 0 0 / 0.212);
+
+  /* Material Design styles */
+  ion-segment-button.md {
+    --color: #000;
+    --color-checked: #fbfbfb;
+    --indicator-height: 3px;
+    border-radius: 6px;
+  };
+}
+
+.scan-outline {
+  margin: 0 auto;
+  align-content: center;
+}
+
+
+//* Estilos para posicionar el boton
+ion-fab  {
+  margin: 0 auto;
+  align-content: center;
+  top: 90%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+// Estilos del icono
+.bi-upc-scan {
+  width: 2em;
+}

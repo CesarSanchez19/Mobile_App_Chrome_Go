@@ -12,4 +12,6 @@ export class InicioComponent  implements OnInit {
 
   ngOnInit() {}
 
+  prueba = console.log("Inicio works! HOME funcionando correctamente !!!")
+
 }
