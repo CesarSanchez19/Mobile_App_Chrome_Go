@@ -1,6 +1,120 @@
-<div>
+<div class="contenidoCentrado">
   <h1>Mi perfil</h1>
-  <ion-button [routerLink]="['/login']">Cerrar sesión</ion-button>
+  <div>
+    <img [src]="profile.avatar" alt="Avatar" style="width: 200px" />
+  </div>
 
+  <!-- Mostrar datos en modo visualización -->
+  <div *ngIf="!editMode">
+    <div class="username-container">
+      <h3>{{ profile.username }}</h3>
+      <ion-icon
+        name="brush-outline"
+        (click)="toggleEditMode()"
+        class="edit-icon"
+      ></ion-icon>
+    </div>
+    <h6 class="FullName">
+      {{ profile.fullName }}
+    </h6>
 
+    <!-- Mostrar solo email y teléfono en el array -->
+    <div *ngFor="let item of profileItems">
+      <div class="frame">
+        <div class="group">
+          <div class="text-wrapper">{{ item.label }}</div>
+          <div class="div">
+            <ion-icon [name]="item.icon" class="mail"></ion-icon>
+            <div class="text-wrapper-2">{{ item.value }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bloque específico para fecha de nacimiento -->
+    <div class="frame">
+      <div class="group">
+        <div class="text-wrapper">Fecha de nacimiento</div>
+        <div class="div">
+          <ion-icon name="calendar-outline" class="mail"></ion-icon>
+          <div class="text-wrapper-2">
+            {{ formatBirthdate(profile.birthdate) }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ion-button [routerLink]="['/login']" class="custom-button logout-button">
+      Cerrar sesión
+    </ion-button>
+  </div>
+
+  <!-- Mostrar formulario en modo edición -->
+  <form *ngIf="editMode" [formGroup]="profileForm" (ngSubmit)="saveChanges()">
+    <div class="frame">
+      <div class="group">
+        <div class="text-wrapper">Nombre de usuario</div>
+        <div class="div">
+          <input formControlName="username" />
+        </div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="group">
+        <div class="text-wrapper">Nombre completo</div>
+        <div class="div">
+          <input formControlName="fullName" />
+        </div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="group">
+        <div class="text-wrapper">Correo electrónico</div>
+        <div class="div">
+          <input formControlName="email" />
+        </div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="group">
+        <div class="text-wrapper">Teléfono</div>
+        <div class="div">
+          <input formControlName="phone" />
+        </div>
+      </div>
+    </div>
+
+    <div class="frame">
+      <div class="group">
+        <div class="text-wrapper">Fecha de nacimiento</div>
+        <div class="div">
+          <ion-datetime
+            formControlName="birthdate"
+            presentation="date"
+            displayFormat="DD/MM/YYYY"
+            [value]="profile.birthdate"
+            (ionChange)="onDateChange($event)"
+            max="2010-12-31"
+            class="custom-datetime"
+          >
+          </ion-datetime>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <ion-button type="submit" class="custom-button"
+        >Guardar cambios</ion-button
+      >
+      <ion-button
+        (click)="toggleEditMode()"
+        class="custom-button cancel-button"
+      >
+        Cancelar
+      </ion-button>
+    </div>
+  </form>
 </div>

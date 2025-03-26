@@ -13,9 +13,7 @@
 
     <p class="no-account">
       ¿No tienes una cuenta?
-      <a class="register-link" (click)="irARegistro()" href="javascript:void(0)"
-        >Regístrate</a
-      >
+      <a class="register-link" (click)="irARegistro()" href="javascript:void(0)">Regístrate</a>
     </p>
 
     <form (ngSubmit)="onSubmit()">
@@ -28,8 +26,8 @@
           type="email"
           [(ngModel)]="email"
           name="email"
-          required
-        ></ion-input>
+          required>
+        </ion-input>
       </div>
 
       <!-- Campo de contraseña -->
@@ -41,56 +39,70 @@
           placeholder="Ingrese su contraseña"
           [(ngModel)]="password"
           name="password"
-          required
-        ></ion-input>
-        <button
-          type="button"
-          class="password-toggle right-toggle"
-          (click)="togglePasswordVisibility()"
-          tabindex="-1"
-          aria-label="Mostrar/ocultar contraseña"
-        >
-          <ion-icon
-            [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
-          ></ion-icon>
+          required>
+        </ion-input>
+        <button type="button" class="password-toggle right-toggle" (click)="togglePasswordVisibility()" tabindex="-1" aria-label="Mostrar/ocultar contraseña">
+          <ion-icon [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
         </button>
+      </div>
+
+      <!-- Mensaje de error del login -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
       </div>
 
       <!-- Recordarme y olvidaste tu contraseña -->
       <div class="remember-container">
         <div class="checkbox-container">
-          <div
-            class="custom-checkbox"
-            [ngClass]="{ 'checked': rememberMe }"
-            (click)="rememberMe = !rememberMe">
-          </div>
+          <div class="custom-checkbox" [ngClass]="{ 'checked': rememberMe }" (click)="rememberMe = !rememberMe"></div>
           <span class="checkbox-label">Recordarme</span>
         </div>
-
-        <a class="forgot-link" href="javascript:void(0)"
-          >¿Olvidaste tu contraseña?</a
-        >
+        <a class="forgot-link" href="javascript:void(0)" (click)="openForgotModal()">¿Olvidaste tu contraseña?</a>
       </div>
 
       <!-- Botón de inicio de sesión -->
       <button class="login-button" type="submit">Iniciar Sesión</button>
 
-      <!-- Separador o -->
+      <!-- Separador "o" -->
       <div class="separator">o</div>
 
       <!-- Inicio de sesión con Google -->
-      <button
-        class="google-button"
-        type="button"
-        (click)="continuarConGoogle()"
-      >
-        <img
-          class="google-icon"
-          src="https://static.vecteezy.com/system/resources/previews/022/613/027/non_2x/google-icon-logo-symbol-free-png.png"
-          alt="Google"
-        />
+      <button class="google-button" type="button" (click)="continuarConGoogle()">
+        <img class="google-icon" src="https://static.vecteezy.com/system/resources/previews/022/613/027/non_2x/google-icon-logo-symbol-free-png.png" alt="Google" />
         Continuar con Google
       </button>
     </form>
+  </div>
+
+  <!-- Modal de "Olvidé mi contraseña" -->
+  <div class="forgot-modal" *ngIf="showForgotModal">
+    <div class="forgot-modal-content">
+      <h2 class="forgot-title">Recuperar contraseña</h2>
+      <p class="forgot-description">
+        Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.
+      </p>
+      <div class="input-wrapper">
+        <ion-input
+          class="custom-input"
+          placeholder="Correo electrónico"
+          type="email"
+          [(ngModel)]="forgotEmail"
+          name="forgotEmail"
+          required>
+        </ion-input>
+      </div>
+      <!-- Mensaje de error del modal -->
+      <div *ngIf="forgotErrorMessage" class="forgot-error-message">
+        {{ forgotErrorMessage }}
+      </div>
+      <!-- Mensaje de éxito del modal -->
+      <div *ngIf="forgotSuccessMessage" class="forgot-success-message">
+        {{ forgotSuccessMessage }}
+      </div>
+      <div class="modal-buttons">
+        <button class="cancel-button" type="button" (click)="closeForgotModal()">Cancelar</button>
+        <button class="send-button" type="button" (click)="enviarResetPassword()">Enviar</button>
+      </div>
+    </div>
   </div>
 </div>

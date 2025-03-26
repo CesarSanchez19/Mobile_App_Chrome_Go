@@ -11,55 +11,87 @@
 
     <!-- Vistas -->
     <ion-segment-view>
-
       <!-- Historial -->
       <ion-segment-content id="historial">
-        aqui van tus cosas ivan
+        <!-- Cartas en forma de lista para los colores -->
+        <ion-card>
+          <ion-card-header>
+            <ion-card-content>
+              <div class="color-box"></div>
+              Contenido 1
+            </ion-card-content>
+            <ion-card-title>Card Title</ion-card-title>
+            <ion-card-subtitle>Card Subtitle</ion-card-subtitle>
+          </ion-card-header>
+        
+          <ion-card-content>
+            Here's a small text description for the card content. Nothing more, nothing less.
+          </ion-card-content>
+        </ion-card>
       </ion-segment-content>
 
       <!-- Mis categorías -->
       <ion-segment-content id="categorias">
         <!-- Buscador -->
-        <ion-searchbar show-clear-button="focus" class="bar-custom"
-          placeholder="Buscar una categoría específica..."></ion-searchbar>
+        <ion-searchbar 
+          show-clear-button="focus" 
+          class="bar-custom"
+          placeholder="Buscar una categoría específica...">
+        </ion-searchbar>
 
-        <!-- Button -->
+        <!-- Botón para abrir modal -->
         <div class="button-container">
-          <ion-button>Crear Categoría</ion-button>
+          <ion-button (click)="openModal()">Crear Categoría</ion-button>
         </div>
 
-        <!-- Acordion -->
+        <!-- Acordiones -->
         <div class="accordion-container">
           <ion-accordion-group>
-
-            <!-- Acordion 1 -->
-            <ion-accordion value="favoritos" toggleIconSlot="start">
-              <ion-item slot="header">
-                <ion-label>Favoritos ⭐</ion-label>
+            <ion-accordion 
+              *ngFor="let categoria of categorias" 
+              [value]="categoria.value" 
+              toggleIconSlot="start">
+              
+              <ion-item slot="header" class="flex items-center justify-between">
+                <ion-label>{{categoria.label}}</ion-label>
+                
+                <!-- Botón de eliminar -->
+                <ion-button 
+                  fill="clear" 
+                  color="danger" 
+                  (click)="eliminarCategoria(categoria)">
+                  <ion-icon name="trash-outline"></ion-icon>
+                </ion-button>
               </ion-item>
-              <div class="ion-padding" slot="content">Contenido Favoritos</div>
+              
+              <div class="ion-padding" slot="content">
+                {{categoria.content}}
+              </div>
             </ion-accordion>
-
-            <!-- Acordion 2 -->
-            <ion-accordion value="asthetic" toggleIconSlot="start">
-              <ion-item slot="header">
-                <ion-label>Asthenic</ion-label>
-              </ion-item>
-              <div class="ion-padding" slot="content">Contenido Asthenic</div>
-            </ion-accordion>
-
-            <!-- Acordion 3 -->
-            <ion-accordion value="brillante" toggleIconSlot="start">
-              <ion-item slot="header">
-                <ion-label>Brillante</ion-label>
-              </ion-item>
-              <div class="ion-padding" slot="content">Contenido Brillante</div>
-            </ion-accordion>
-
           </ion-accordion-group>
         </div>
       </ion-segment-content>
     </ion-segment-view>
   </div>
-
 </div>
+
+<!-- Modal para crear categoría -->
+<ion-modal [isOpen]="isModalOpen" (didDismiss)="closeModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title class="title-custom">Crear Nueva Categoría</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-item>
+        <ion-label class="label-custom" position='floating'>Nombre de la nueva categoría</ion-label>
+        <ion-input class="input-custom" [(ngModel)]="nuevaCategoria"></ion-input>
+      </ion-item>
+      <div class="button-container">
+      <ion-button class="crear-button" (click)="crearCategoria()">Crear</ion-button>
+      <ion-button class="cancelar-button" (click)="closeModal()">Cancelar</ion-button>
+    </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
