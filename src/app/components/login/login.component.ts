@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
-import firebase from 'firebase/compat/app'; // Proveedor de Google
+import { Auth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +13,7 @@ export class LoginComponent implements OnInit {
   password: string = '';
   rememberMe: boolean = false;
   showPassword: boolean = false;
-  errorMessage: string = ''; // Mensaje de error en el login
+  errorMessage: string = '';
 
   // Variables para el modal "Olvidé mi contraseña"
   showForgotModal: boolean = false;
@@ -24,95 +23,81 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private afAuth: AngularFireAuth
+    private auth: Auth
   ) {}
 
-  ngOnInit() {}
+  ngOnInit(): void {}
 
-  onSubmit() {
-    // Reiniciar mensaje de error
+  async onSubmit() {
     this.errorMessage = '';
 
-    // Validaciones locales para campos vacíos o incompletos
-    if (!this.email && !this.password) {
+    // Validaciones locales
+    if (!this.email || !this.password) {
       this.errorMessage = 'Por favor, ingresa tu correo electrónico y contraseña.';
       return;
     }
-    if (!this.email) {
-      this.errorMessage = 'Por favor, ingresa tu correo electrónico.';
-      return;
-    }
-    if (!this.password) {
-      this.errorMessage = 'Por favor, ingresa tu contraseña.';
-      return;
-    }
 
-    // Si los campos están completos, se intenta iniciar sesión
-    this.afAuth.signInWithEmailAndPassword(this.email, this.password)
-      .then(userCredential => {
-        console.log('Inicio de sesión exitoso:', userCredential);
-        this.router.navigate(['/home']);
-      })
-      .catch(error => {
-        console.error('Error en inicio de sesión:', error);
-        switch (error.code) {
-          case 'auth/invalid-email':
-            this.errorMessage = 'El correo electrónico está mal escrito, por favor introdúcelo correctamente.';
-            break;
-          case 'auth/wrong-password':
-            this.errorMessage = 'La contraseña es incorrecta, por favor verifícala.';
-            break;
-          case 'auth/user-not-found':
-            this.errorMessage = 'El correo electrónico no está registrado.';
-            break;
-          case 'auth/account-exists-with-different-credential':
-            this.errorMessage = 'Este correo está vinculado a un inicio de sesión con Google. Por favor, inicia sesión con Google.';
-            break;
-          default:
-            this.errorMessage = 'Datos inválidos, por favor ingresa datos válidos.';
-            break;
-        }
-      });
+    try {
+      const userCredential = await signInWithEmailAndPassword(this.auth, this.email, this.password);
+      console.log('Usuario autenticado:', userCredential.user);
+      this.router.navigate(['/home']);
+    } catch (error: any) {
+      console.error('Error al iniciar sesión:', error);
+      switch (error.code) {
+        case 'auth/user-not-found':
+          this.errorMessage = 'El usuario no existe.';
+          break;
+        case 'auth/wrong-password':
+          this.errorMessage = 'Contraseña incorrecta.';
+          break;
+        case 'auth/invalid-email':
+          this.errorMessage = 'El correo electrónico no es válido.';
+          break;
+        default:
+          this.errorMessage = 'Error al iniciar sesión. Intenta nuevamente.';
+      }
+    }
   }
 
-  continuarConGoogle() {
-    this.errorMessage = '';
-
-    this.afAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
-      .then(userCredential => {
-        console.log('Inicio de sesión con Google exitoso:', userCredential);
-        this.router.navigate(['/home']);
-      })
-      .catch(error => {
-        console.error('Error en inicio de sesión con Google:', error);
-        this.errorMessage = 'Error: ' + error.message;
-      });
-  }
-
-  irARegistro() {
-    this.router.navigate(['/signup']);
+  async continuarConGoogle() {
+    try {
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(this.auth, provider);
+      console.log('Usuario autenticado con Google:', userCredential.user);
+      this.router.navigate(['/home']);
+    } catch (error: any) {
+      console.error('Error al iniciar sesión con Google:', error);
+      this.errorMessage = 'Error al iniciar sesión con Google. Intenta nuevamente.';
+    }
   }
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
 
+  // Navegar a la página de registro
+  irARegistro() {
+    this.router.navigate(['/signup']);
+  }
+
   // Métodos para el modal "Olvidé mi contraseña"
   openForgotModal() {
     this.showForgotModal = true;
-    this.forgotEmail = '';
-    this.forgotErrorMessage = '';
-    this.forgotSuccessMessage = '';
+    this.resetForgotPasswordFields();
   }
 
   closeForgotModal() {
     this.showForgotModal = false;
+    this.resetForgotPasswordFields();
+  }
+
+  private resetForgotPasswordFields() {
     this.forgotEmail = '';
     this.forgotErrorMessage = '';
     this.forgotSuccessMessage = '';
   }
 
-  enviarResetPassword() {
+  async enviarResetPassword() {
     this.forgotErrorMessage = '';
     this.forgotSuccessMessage = '';
 
@@ -121,19 +106,12 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    this.afAuth.sendPasswordResetEmail(this.forgotEmail)
-      .then(() => {
-        this.forgotSuccessMessage = 'Se ha enviado un enlace para restablecer la contraseña a tu correo.';
-      })
-      .catch(error => {
-        console.error('Error al enviar el correo de restablecimiento:', error);
-        if (error.code === 'auth/invalid-email') {
-          this.forgotErrorMessage = 'El correo electrónico está mal escrito, por favor corrígelo.';
-        } else if (error.code === 'auth/user-not-found') {
-          this.forgotErrorMessage = 'El correo electrónico no está registrado.';
-        } else {
-          this.forgotErrorMessage = 'Error al enviar el correo, intenta nuevamente.';
-        }
-      });
+    try {
+      await sendPasswordResetEmail(this.auth, this.forgotEmail);
+      this.forgotSuccessMessage = 'Se ha enviado un enlace para restablecer la contraseña a tu correo.';
+    } catch (error: any) {
+      console.error('Error al enviar email de reseteo:', error);
+      this.forgotErrorMessage = 'No se pudo enviar el enlace de reseteo. Intenta nuevamente.';
+    }
   }
 }
