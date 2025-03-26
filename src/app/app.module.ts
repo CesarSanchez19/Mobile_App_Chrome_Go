@@ -14,6 +14,7 @@ import { GaleriaComponent } from './components/galeria/galeria.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { InicioComponent } from './components/inicio/inicio.component';
+import { MainComponent } from './components/main/main.component';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { getAuth, provideAuth } from '@angular/fire/auth';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
@@ -21,6 +22,7 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 @NgModule({
   declarations: [
     AppComponent,
+    MainComponent,
     LoginComponent,
     GaleriaComponent,
     PerfilComponent,

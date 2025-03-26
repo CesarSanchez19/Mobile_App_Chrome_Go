@@ -1,0 +1,38 @@
+<ion-app>
+  <ion-router-outlet></ion-router-outlet>
+
+  <!-- Navbar condicional con diseño mejorado -->
+  <ion-tabs>
+    <ion-tab-bar slot="bottom" class="custom-tab-bar">
+      <ion-tab-button
+        [routerLink]="['/home']"
+        class="custom-tab-button"
+      >
+        <div class="tab-content">
+          <ion-icon name="home-outline" class="tab-icon"></ion-icon>
+          <ion-label class="tab-label">Inicio</ion-label>
+        </div>
+      </ion-tab-button>
+
+      <ion-tab-button
+        [routerLink]="['/home/galeria']"
+        class="custom-tab-button"
+      >
+        <div class="tab-content">
+          <ion-icon name="color-fill-outline" class="tab-icon"></ion-icon>
+          <ion-label class="tab-label">Galeria</ion-label>
+        </div>
+      </ion-tab-button>
+
+      <ion-tab-button
+        [routerLink]="['/home/perfil']"
+        class="custom-tab-button"
+      >
+        <div class="tab-content">
+          <ion-icon name="person-outline" class="tab-icon"></ion-icon>
+          <ion-label class="tab-label">Mi perfil</ion-label>
+        </div>
+      </ion-tab-button>
+    </ion-tab-bar>
+  </ion-tabs>
+</ion-app>

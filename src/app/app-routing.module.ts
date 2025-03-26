@@ -5,6 +5,7 @@ import { GaleriaComponent } from './components/galeria/galeria.component';
 import { PerfilComponent } from './components/perfil/perfil.component';
 import { SignUpComponent } from './components/sign-up/sign-up.component';
 import { InicioComponent } from './components/inicio/inicio.component';
+import { MainComponent } from './components/main/main.component';
 
 const routes: Routes = [
   {
@@ -22,15 +23,21 @@ const routes: Routes = [
   },
   {
     path: 'home',
-    component: InicioComponent
-  },
-  {
-    path: 'galeria',
-    component: GaleriaComponent
-  },
-  {
-    path: 'perfil',
-    component: PerfilComponent
+    component: MainComponent,
+    children: [
+      {
+        path: '',
+        component: InicioComponent
+      },
+      {
+        path: 'galeria',
+        component: GaleriaComponent
+      },
+      {
+        path: 'perfil',
+        component: PerfilComponent
+      },
+    ]
   },
   {
     path: '**',
