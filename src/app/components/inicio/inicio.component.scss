@@ -31,18 +31,11 @@
   color: white;
   margin: 0 auto;
   align-content: center;
+  // padding: 1em;
   max-width: 97%;
-  margin-top: 5vh;
+  margin-top: 7vh;
   border-radius: 10px;
   background-color: rgba(0, 0, 0, 0.665);
-
-  ion-icon {
-    color: white;
-  }
-
-  ion-icon:hover {
-    color: aqua;
-  }
 
   ion-segment-button {
     --color: rgb(33, 182, 250);
@@ -58,6 +51,12 @@
       color: aqua;
     }
   }
+}
+
+.bi-images {
+  color: white;
+  width: 3em;
+  height: 2em;
 }
 
 /* Posicionamiento del botón principal (FAB) */
