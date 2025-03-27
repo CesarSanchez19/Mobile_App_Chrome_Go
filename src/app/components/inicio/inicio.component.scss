@@ -1,4 +1,13 @@
-/* Estilo para el video de fondo */
+#cameraPreview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+/* Estilo para el video de fondo (solo en web) */
 #bg-video {
   position: fixed;
   top: 0;
@@ -9,7 +18,7 @@
   z-index: -1;
 }
 
-/* El contenedor principal ahora es transparente para mostrar el video */
+/* Contenedor principal transparente para mostrar el video */
 .main {
   background-color: transparent;
   padding: 10px;
@@ -77,7 +86,7 @@ ion-fab {
   color: rgb(255, 255, 255);
 }
 
-/* Ocultamos completamente el input de archivos */
+/* Oculta el input de archivos */
 #fileInput {
   display: none !important;
   position: absolute;
