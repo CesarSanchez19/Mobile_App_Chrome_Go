@@ -13,54 +13,60 @@
     <ion-segment-view>
       <!-- Historial -->
       <ion-segment-content id="historial">
+        <div class="button-container">
+          <ion-button (click)="obtenerCambios()">Obtener Cambios</ion-button>
+          <ion-spinner *ngIf="isLoading"></ion-spinner>
+        </div>
         <div class="scroll-container">
-          <!-- Cartas en forma de lista para los colores -->
           <ion-segment-content>
-            <!-- Iteramos sobre los colores -->
             <ion-card class="cards" *ngFor="let color of colores">
               <ion-card-header>
                 <ion-card-content>
                   <ion-grid>
                     <ion-row>
                       <ion-col size="2" class="color-container">
-                        <div
-                          class="color-box"
-                          [ngStyle]="{'background-color': color.hex}"
-                        ></div>
+                        <div class="color-box" [ngStyle]="{'background-color': color.hex}"></div>
                       </ion-col>
                       <ion-col size="10" class="text-container">
                         <div class="union">
                           <div class="text-container">
-                            <!-- Si se está editando este color, mostramos un input -->
-                            <ng-container *ngIf="editingColorId === color.id; else viewMode">
-                              <ion-input
-                                [(ngModel)]="editingColorName"
-                                (keyup.enter)="saveEditing(color)"
-                                (blur)="cancelEditing()"
-                              ></ion-input>
+                            <ng-container *ngIf="editingColorId === color.id; else viewModeColor">
+                              <ion-input [(ngModel)]="editingColorName" (keyup.enter)="saveEditing(color)" (blur)="saveEditing(color)"></ion-input>
+                              <ion-button fill="clear" color="success" (click)="saveEditing(color)">Confirmar</ion-button>
                             </ng-container>
-                            <!-- Modo vista normal -->
-                            <ng-template #viewMode>
-                              <ion-card-title (dblclick)="enableEditing(color)">
-                                {{ color.name }}
-                              </ion-card-title>
+                            <ng-template #viewModeColor>
+                              <ion-card-title (dblclick)="enableEditing(color)">{{ color.name }}</ion-card-title>
                             </ng-template>
-
-                            <ion-card-subtitle>
-                              {{ color.hex }}
-                            </ion-card-subtitle>
+                            <ion-card-subtitle>{{ color.hex }}</ion-card-subtitle>
                           </div>
                           <div class="icon-container">
-                            <!-- <ion-icon name="add-circle-outline" class="icon"></ion-icon> -->
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-plus-circle icon" viewBox="0 0 16 16">
-                              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              class="bi bi-plus-circle icon"
+                              viewBox="0 0 16 16"
+                              (click)="openAssignModal(color)"
+                            >
+                              <path
+                                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"
+                              />
+                              <path
+                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
+                              />
                             </svg>
-                            <!-- Papelera para eliminar -->
-                            <!-- <ion-icon name="trash-outline" class="icon" (click)="deleteColor(color)" ></ion-icon> -->
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-trash icon" viewBox="0 0 16 16" (click)="deleteColor(color)">
-                              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                              <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="currentColor"
+                              class="bi bi-trash icon"
+                              viewBox="0 0 16 16"
+                              (click)="deleteColor(color)"
+                            >
+                              <path
+                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"
+                              />
+                              <path
+                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"
+                              />
                             </svg>
                           </div>
                         </div>
@@ -74,49 +80,107 @@
         </div>
       </ion-segment-content>
 
-      <!-- Mis categorías -->
+      <!-- Sección de Categorías -->
       <ion-segment-content id="categorias">
-        <!-- Buscador -->
         <ion-searchbar
           show-clear-button="focus"
           class="bar-custom"
           placeholder="Buscar una categoría específica..."
-        >
-        </ion-searchbar>
-
-        <!-- Botón para abrir modal -->
+          (ionInput)="onSearchCategory($event)"
+        ></ion-searchbar>
         <div class="button-container">
           <ion-button (click)="openModal()">Crear Categoría</ion-button>
+          <ion-button (click)="obtenerCambiosCategorias()">Obtener Cambios</ion-button>
+          <ion-spinner *ngIf="isLoadingCategories"></ion-spinner>
         </div>
 
-        <!-- Acordiones -->
-        <div class="accordion-container">
-          <ion-accordion-group>
-            <ion-accordion
-              *ngFor="let categoria of categorias"
-              [value]="categoria.value"
-              toggleIconSlot="start"
-            >
-              <ion-item slot="header" class="flex items-center justify-between">
-                <ion-label>{{ categoria.label }}</ion-label>
-                <!-- Botón de eliminar -->
-                <ion-button
-                  fill="clear"
-                  color="danger"
-                  (click)="eliminarCategoria(categoria)"
-                >
-                  <!-- <ion-icon name="trash-outline"></ion-icon> -->
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-trash icon" viewBox="0 0 16 16">
-                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                  </svg>
-                </ion-button>
-              </ion-item>
-              <div class="ion-padding" slot="content">
-                {{ categoria.content }}
-              </div>
-            </ion-accordion>
-          </ion-accordion-group>
+        <!-- Contenedor con scroll para las categorías -->
+        <div class="scroll-container-cat">
+          <div class="accordion-container">
+            <ion-accordion-group>
+              <ion-accordion
+                *ngFor="let categoria of filteredCategories"
+                [value]="categoria.id"
+                toggleIconSlot="start"
+              >
+                <ion-item slot="header" class="flex items-center justify-between">
+                  <ng-container *ngIf="editingCategoryId === categoria.id; else viewModeCategory">
+                    <ion-input
+                      [(ngModel)]="editingCategoryName"
+                      (keyup.enter)="saveEditingCategory(categoria)"
+                      (blur)="saveEditingCategory(categoria)"
+                    ></ion-input>
+                    <ion-button fill="clear" color="success" (click)="saveEditingCategory(categoria)">Confirmar</ion-button>
+                  </ng-container>
+                  <ng-template #viewModeCategory>
+                    <ion-label (dblclick)="enableEditingCategory(categoria)">
+                      <div class="cat-label">{{ categoria.label }}</div>
+                      <div class="cat-count">{{ categoria.colors?.length || 0 }} colores escaneados</div>
+                    </ion-label>
+                  </ng-template>
+                  <ion-button fill="clear" color="danger" (click)="eliminarCategoria(categoria)">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="currentColor"
+                      class="bi bi-trash icon"
+                      viewBox="0 0 16 16"
+                    >
+                      <path
+                        d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"
+                      />
+                      <path
+                        d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"
+                      />
+                    </svg>
+                  </ion-button>
+                </ion-item>
+                <div class="ion-padding" slot="content">
+                  {{ categoria.content }}
+                  <!-- Lista de colores asignados a la categoría -->
+                  <ion-card class="cards" *ngFor="let color of categoria.colors">
+                    <ion-card-header>
+                      <ion-card-content>
+                        <ion-grid>
+                          <ion-row>
+                            <ion-col size="2" class="color-container">
+                              <div class="color-box" [ngStyle]="{'background-color': color.hex}"></div>
+                            </ion-col>
+                            <ion-col size="8" class="text-container">
+                              <div class="union">
+                                <div class="text-container">
+                                  <ng-container *ngIf="categoria.id && editingCategoryColors[categoria.id] && editingCategoryColors[categoria.id].colorId === color.id; else viewModeCatColor">
+                                    <ion-input [(ngModel)]="editingCategoryColors[categoria.id].newName"
+                                      (keyup.enter)="saveEditingCategoryColor(categoria)"
+                                      (blur)="saveEditingCategoryColor(categoria)">
+                                    </ion-input>
+                                    <ion-button fill="clear" color="success" (click)="saveEditingCategoryColor(categoria)">Confirmar</ion-button>
+                                  </ng-container>
+                                  <ng-template #viewModeCatColor>
+                                    <ion-card-title (dblclick)="enableEditingCategoryColor(categoria, color)">
+                                      {{ color.name }}
+                                    </ion-card-title>
+                                  </ng-template>
+                                  <ion-card-subtitle>{{ color.hex }}</ion-card-subtitle>
+                                </div>
+                              </div>
+                            </ion-col>
+                            <ion-col size="2" class="icon-container">
+                              <!-- Ícono de eliminación -->
+                              <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-trash icon"
+                                viewBox="0 0 16 16" (click)="deleteColorFromCategory(categoria, color)">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                              </svg>
+                            </ion-col>
+                          </ion-row>
+                        </ion-grid>
+                      </ion-card-content>
+                    </ion-card-header>
+                  </ion-card>
+                </div>
+              </ion-accordion>
+            </ion-accordion-group>
+          </div>
         </div>
       </ion-segment-content>
     </ion-segment-view>
@@ -133,17 +197,50 @@
     </ion-header>
     <ion-content>
       <ion-item>
-        <ion-label class="label-custom" position="floating">
-          Nombre de la nueva categoría
-        </ion-label>
-        <ion-input
-          class="input-custom"
-          [(ngModel)]="nuevaCategoria"
-        ></ion-input>
+        <ion-label class="label-custom" position="floating">Nombre de la nueva categoría</ion-label>
+        <ion-input class="input-custom" [(ngModel)]="nuevaCategoria"></ion-input>
       </ion-item>
       <div class="button-container">
         <ion-button class="crear-button" (click)="crearCategoria()">Crear</ion-button>
         <ion-button class="cancelar-button" (click)="closeModal()">Cancelar</ion-button>
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<!-- Modal para asignar color a categoría -->
+<ion-modal [isOpen]="assignModalOpen" (didDismiss)="closeAssignModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title class="title-custom">Asignar color a categoría</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-item>
+        <ion-label>Seleccionar todas</ion-label>
+        <ion-checkbox
+          slot="end"
+          [(ngModel)]="masterSelected"
+          (ionChange)="toggleMasterSelection()"
+        ></ion-checkbox>
+      </ion-item>
+      <ion-list>
+        <ion-item *ngFor="let cat of categorias">
+          <ion-label>
+            <div>{{ cat.label }}</div>
+            <div class="cat-count">{{ cat.colors?.length || 0 }} colores escaneados</div>
+          </ion-label>
+          <ion-checkbox
+            slot="end"
+            [checked]="cat.id ? selectedCategoryIds.includes(cat.id!) : false"
+            (ionChange)="toggleCategorySelection(cat.id!)"
+          ></ion-checkbox>
+        </ion-item>
+      </ion-list>
+      <div class="button-container">
+        <ion-button fill="clear" color="success" (click)="confirmAssignColor()">Confirmar</ion-button>
+        <ion-button fill="clear" color="medium" (click)="closeAssignModal()">Cancelar</ion-button>
       </div>
     </ion-content>
   </ng-template>

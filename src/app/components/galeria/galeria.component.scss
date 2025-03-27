@@ -28,7 +28,7 @@ ion-segment.custom {
   width: 100%;
 }
 
-/* Estilos para los botones del segmento */
+/* Botones del segmento */
 ion-segment-button.button-custom {
   --color: black !important;
   --background: transparent;
@@ -40,7 +40,7 @@ ion-segment-button.button-custom {
   transition: background-color 0.3s ease-in-out;
 }
 
-/* Cuando un botón está seleccionado */
+/* Botón seleccionado */
 ion-segment-button.button-custom[aria-selected="true"] {
   --background: #3b82f6 !important;
   --color: #fff !important;
@@ -71,12 +71,12 @@ ion-searchbar.bar-custom {
   padding: 0;
 }
 
-// Modificar el input interno
+/* Modificar el input interno */
 ion-searchbar.bar-custom::part(input) {
   background-color: white !important;
 }
 
-// Modificar el icono
+/* Modificar el icono */
 ::ng-deep ion-searchbar.bar-custom .searchbar-search-icon {
   color: #2869e8 !important;
 }
@@ -138,30 +138,9 @@ ion-item {
   border-radius: 5px;
 }
 
-.blue {
-  background-color: #0000ff;
-}
-
-.green {
-  background-color: #00ff00;
-}
-
-.yellow {
-  background-color: #ffff00;
-}
-
-.orange {
-  background-color: #ffa500;
-}
-
-.pink {
-  background-color: #ffb6c1;
-}
-
 .text-container {
   display: inline-block;
   flex-direction: column;
-  justify-content: center;
 }
 
 .union {
@@ -173,52 +152,56 @@ ion-item {
   justify-items: right;
 }
 
+/* Ajuste importante para mantener el icono a la derecha en su columna */
 .icon-container {
   display: flex;
   gap: 10px;
+  justify-content: flex-end; /* Alinea los íconos a la derecha */
+  align-items: center;       /* Centra verticalmente */
 }
 
 .icon {
   width: 2em;
 }
 
+/* Scroll container para la sección Historial */
 .scroll-container {
   max-height: 600px;
   overflow-y: auto;
   padding: 10px;
 }
 
-/* ============================= */
-/*  AJUSTES PARA PANTALLAS PEQUEÑAS  */
-/* ============================= */
+/* Scroll container para la sección Categorías */
+.scroll-container-cat {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* Contador de colores */
+.cat-count {
+  font-size: 0.8em;
+  color: gray;
+}
+
+/* Ajustes para pantallas pequeñas */
 @media (max-width: 480px) {
-  /* Reduce padding para aprovechar mejor el espacio */
   .main {
     padding: 5px;
   }
-
-  /* Ajusta altura máxima del scroll para pantallas más pequeñas */
-  .scroll-container {
-    max-height: px;
+  .scroll-container,
+  .scroll-container-cat {
+    max-height: 400px;
   }
-
-  /* Disminuye ligeramente el tamaño del recuadro de color */
   .color-box {
     width: 40px;
     height: 40px;
   }
-
-  /* Ajusta el tamaño de los íconos */
   .icon {
     width: 1.7em;
   }
-
-  /* Reduce el espacio entre elementos */
   .union {
     gap: 5px;
   }
-
-  /* Asegura que las tarjetas no se vean muy grandes en pantallas pequeñas */
   ion-card.cards {
     margin: 0 5px;
   }
