@@ -1,70 +1,59 @@
-// Declara el módulo para ColorThief (si no existe @types/colorthief)
-declare module 'colorthief';
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Platform, ToastController } from '@ionic/angular';
-
-// Plugins de Capacitor
+import { Auth } from '@angular/fire/auth';
 import { CameraPreview, CameraPreviewOptions, CameraPreviewPictureOptions } from '@capacitor-community/camera-preview';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
-
 import ColorThief from 'colorthief';
+import { ColorService, Color } from '../../services/color.service'; // Ajusta la ruta según tu estructura
 
 @Component({
   selector: 'app-inicio',
   templateUrl: './inicio.component.html',
   styleUrls: ['./inicio.component.scss'],
-  standalone: false
+  standalone: false,
 })
 export class InicioComponent implements OnInit, OnDestroy {
 
-  // === Control para Web (getUserMedia) ===
+  // Variables para controlar cámara web/nativa
   stream: MediaStream | null = null;
-  currentFacingMode: string = 'environment'; // Por defecto, cámara trasera en la web
+  currentFacingMode: string = 'environment';
+  useFrontCamera: boolean = false;
+  flashOn: boolean = false;
+  isNative: boolean = false;
 
-  // === Control para Nativo (Camera Preview) ===
-  useFrontCamera: boolean = false; // false = trasera, true = frontal
-  flashOn: boolean = false;        // Estado del flash
-
-  // === Datos de la imagen capturada / seleccionada ===
-  image: string | undefined; // Base64 o dataURL
-  isNative: boolean = false;  // true si se ejecuta en Android/iOS
-
-  // === Resultados de extracción de colores (ColorThief) ===
+  // Datos de la imagen capturada y colores extraídos
+  image: string | undefined;
   colors: { name: string; hex: string }[] = [];
-  showModal: boolean = false; // Para mostrar/ocultar la modal
+  showModal: boolean = false;
 
   constructor(
     private platform: Platform,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private auth: Auth,
+    private colorService: ColorService
   ) {
     // Se considera nativo si es 'hybrid', 'android' o 'ios'
     this.isNative = this.platform.is('hybrid') || this.platform.is('android') || this.platform.is('ios');
   }
 
-  // Ciclo de vida
   ngOnInit() {
     if (this.isNative) {
-      // Inicia la cámara nativa como fondo
       this.startCameraPreviewNative();
     } else {
-      // Inicia la cámara web
       this.startCameraWeb();
     }
   }
 
   ngOnDestroy() {
     if (this.isNative) {
-      // Detiene la cámara nativa
       this.stopCameraPreviewNative();
     } else {
-      // Detiene la cámara web
       this.stopCameraWeb();
     }
   }
 
   // =======================================================
-  // =============   CÁMARA WEB (getUserMedia)   ===========
+  // ============== Cámara Web (getUserMedia) =============
   // =======================================================
   startCameraWeb() {
     if (navigator.mediaDevices?.getUserMedia) {
@@ -93,7 +82,6 @@ export class InicioComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Captura en la web: dibuja un <canvas> a partir del <video>
   capturePhotoWeb() {
     const video = document.getElementById('bg-video') as HTMLVideoElement;
     if (video) {
@@ -109,37 +97,24 @@ export class InicioComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Cambia entre cámara trasera y frontal en la web
   switchCameraWeb() {
     this.currentFacingMode = (this.currentFacingMode === 'environment') ? 'user' : 'environment';
     this.stopCameraWeb();
     this.startCameraWeb();
   }
 
-  // El flash no es soportado en getUserMedia en la mayoría de navegadores
   toggleFlashWeb() {
     this.presentToast('El flash no está soportado en la versión web.');
   }
 
   // =======================================================
-  // ==========   CÁMARA NATIVA (Camera Preview)   =========
+  // ============= Cámara Nativa (Camera Preview) ==========
   // =======================================================
   async startCameraPreviewNative() {
     try {
-      console.log('Dimensiones de pantalla:', {
-        width: window.screen.width,
-        height: window.screen.height,
-        devicePixelRatio: window.devicePixelRatio
-      });
-
-      // Verificar permisos de cámara
       const cameraPermission = await Camera.checkPermissions();
-      console.log('Estado de permisos de cámara:', cameraPermission);
-
       if (cameraPermission.camera !== 'granted') {
         const requestResult = await Camera.requestPermissions();
-        console.log('Resultado de solicitud de permisos:', requestResult);
-
         if (requestResult.camera !== 'granted') {
           this.presentToast('Permisos de cámara denegados');
           return;
@@ -156,12 +131,10 @@ export class InicioComponent implements OnInit, OnDestroy {
         height: window.screen.height,
       };
 
-      console.log('Opciones de CameraPreview:', cameraPreviewOpts);
-
       await CameraPreview.start(cameraPreviewOpts);
       console.log('CameraPreview iniciado correctamente');
     } catch (err) {
-      console.error('Error detallado en startCameraPreviewNative:', err);
+      console.error('Error en startCameraPreviewNative:', err);
       this.presentToast('Error al iniciar cámara: ' + JSON.stringify(err));
     }
   }
@@ -174,14 +147,10 @@ export class InicioComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Toma una foto con la cámara nativa, retorna base64
   async capturePhotoNative() {
     try {
-      const options: CameraPreviewPictureOptions = {
-        quality: 90
-      };
+      const options: CameraPreviewPictureOptions = { quality: 90 };
       const result = await CameraPreview.capture(options);
-      // result.value es base64 sin 'data:image/...'
       this.image = 'data:image/jpeg;base64,' + result.value;
       console.log('Foto capturada (nativo):', this.image);
     } catch (error) {
@@ -189,15 +158,12 @@ export class InicioComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Cambia entre cámara frontal y trasera en nativo
   async switchCameraNative() {
     this.useFrontCamera = !this.useFrontCamera;
-    // Reiniciamos la preview con la nueva posición
     await this.stopCameraPreviewNative();
     await this.startCameraPreviewNative();
   }
 
-  // Enciende o apaga el flash (si el dispositivo lo soporta)
   async toggleFlashNative() {
     try {
       this.flashOn = !this.flashOn;
@@ -209,10 +175,8 @@ export class InicioComponent implements OnInit, OnDestroy {
   }
 
   // =======================================================
-  // =============   BOTONES / ACCIONES COMUNES   ==========
+  // ================ Botones/Acciones Comunes =============
   // =======================================================
-
-  // Usa el mismo botón para tomar la foto (no se modifica tu botón ni la lógica del modal)
   capturePhoto() {
     if (this.isNative) {
       this.capturePhotoNative().then(() => {
@@ -224,10 +188,8 @@ export class InicioComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Abre la galería del dispositivo (Android/iOS) o input de archivos (web)
   openGallery() {
     if (this.isNative) {
-      // Usamos el plugin oficial de Camera para abrir la galería
       this.openGalleryNative();
     } else {
       const fileInput = document.getElementById('fileInput') as HTMLInputElement;
@@ -237,7 +199,6 @@ export class InicioComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Abre galería en modo nativo usando @capacitor/camera
   async openGalleryNative() {
     try {
       const photo = await Camera.getPhoto({
@@ -254,7 +215,6 @@ export class InicioComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Input oculto en web
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -268,7 +228,6 @@ export class InicioComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Activa/desactiva flash
   async toggleFlash() {
     if (this.isNative) {
       await this.toggleFlashNative();
@@ -277,7 +236,6 @@ export class InicioComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Cambia cámara (frontal <-> trasera)
   async switchCamera() {
     if (this.isNative) {
       await this.switchCameraNative();
@@ -287,7 +245,7 @@ export class InicioComponent implements OnInit, OnDestroy {
   }
 
   // =======================================================
-  // =============   PROCESAMIENTO CON COLORTHIEF   ========
+  // ===== Procesamiento con ColorThief y Almacenado ======
   // =======================================================
   processImage() {
     if (!this.image) return;
@@ -295,16 +253,28 @@ export class InicioComponent implements OnInit, OnDestroy {
     const img = new Image();
     img.crossOrigin = 'Anonymous';
     img.src = this.image;
-    img.onload = () => {
+    img.onload = async () => {
       try {
         const colorThief = new ColorThief();
-        // Obtiene paleta de 6 colores (array de [r, g, b])
+        // Extrae una paleta de 6 colores (array de [r, g, b])
         const palette = colorThief.getPalette(img, 6);
         this.colors = palette.map((rgb: number[]) => {
           const hex = this.rgbToHex(rgb[0], rgb[1], rgb[2]);
           return { hex, name: this.getColorName(hex) };
         });
         console.log('Colores extraídos:', this.colors);
+
+        // Guarda cada color en Firestore asociado al usuario autenticado
+        const user = this.auth.currentUser;
+        if (user) {
+          for (const color of this.colors) {
+            await this.colorService.addColor(user.uid, color as Color);
+          }
+          console.log('Colores guardados en Firestore.');
+        } else {
+          console.error('No se encontró un usuario autenticado.');
+        }
+
         this.showModal = true;
       } catch (error) {
         console.error('Error extrayendo colores:', error);
@@ -315,7 +285,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     };
   }
 
-  // Convierte [r, g, b] a #rrggbb
+  // Convierte valores RGB a HEX (#rrggbb)
   rgbToHex(r: number, g: number, b: number): string {
     return (
       '#' +
@@ -328,7 +298,7 @@ export class InicioComponent implements OnInit, OnDestroy {
     );
   }
 
-  // Devuelve un nombre básico según el color dominante
+  // Asigna un nombre básico al color según su componente dominante
   getColorName(hex: string): string {
     const r = parseInt(hex.substr(1, 2), 16);
     const g = parseInt(hex.substr(3, 2), 16);
@@ -343,12 +313,10 @@ export class InicioComponent implements OnInit, OnDestroy {
     return 'Color';
   }
 
-  // Cierra la modal
   closeModal() {
     this.showModal = false;
   }
 
-  // Toast helper
   private async presentToast(message: string) {
     const toast = await this.toastCtrl.create({
       message,
