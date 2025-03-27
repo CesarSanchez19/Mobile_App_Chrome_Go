@@ -14,159 +14,70 @@
       <!-- Historial -->
       <ion-segment-content id="historial">
         <div class="scroll-container">
-        <!-- Cartas en forma de lista para los colores -->
-        <ion-segment-content>
-          <ion-card class="cards">
-            <ion-card-header>
+          <!-- Cartas en forma de lista para los colores -->
+          <ion-segment-content>
+            <!-- Iteramos sobre los colores -->
+            <ion-card class="cards" *ngFor="let color of colores">
+              <ion-card-header>
                 <ion-card-content>
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col size="2" class="color-container">
-                                <div class="color-box blue"></div>
-                            </ion-col>
-                            <ion-col size="10" class="text-container">
-                                <div class="union">
-                                    <div class="text-container">
-                                        <ion-card-title>AZUL</ion-card-title>
-                                        <ion-card-subtitle>#0000FF</ion-card-subtitle>
-                                    </div>
-                                    <div class="icon-container">
-                                        <ion-icon name="share-social-outline" class="icon"></ion-icon>
-                                        <ion-icon name="add-circle-outline" class="icon"></ion-icon>
-                                        <ion-icon name="trash-outline" class="icon"></ion-icon>
-                                        <ion-icon name="star-outline" class="icon"></ion-icon>
-                                    </div>
-                                </div>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
+                  <ion-grid>
+                    <ion-row>
+                      <ion-col size="2" class="color-container">
+                        <div
+                          class="color-box"
+                          [ngStyle]="{'background-color': color.hex}"
+                        ></div>
+                      </ion-col>
+                      <ion-col size="10" class="text-container">
+                        <div class="union">
+                          <div class="text-container">
+                            <!-- Si se está editando este color, mostramos un input -->
+                            <ng-container *ngIf="editingColorId === color.id; else viewMode">
+                              <ion-input
+                                [(ngModel)]="editingColorName"
+                                (keyup.enter)="saveEditing(color)"
+                                (blur)="cancelEditing()"
+                              ></ion-input>
+                            </ng-container>
+                            <!-- Modo vista normal -->
+                            <ng-template #viewMode>
+                              <ion-card-title (dblclick)="enableEditing(color)">
+                                {{ color.name }}
+                              </ion-card-title>
+                            </ng-template>
+
+                            <ion-card-subtitle>
+                              {{ color.hex }}
+                            </ion-card-subtitle>
+                          </div>
+                          <div class="icon-container">
+                            <ion-icon name="add-circle-outline" class="icon"></ion-icon>
+                            <!-- Papelera para eliminar -->
+                            <ion-icon
+                              name="trash-outline"
+                              class="icon"
+                              (click)="deleteColor(color)"
+                            ></ion-icon>
+                          </div>
+                        </div>
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
                 </ion-card-content>
-            </ion-card-header>
-        </ion-card>
-        
-        <ion-card class="cards">
-            <ion-card-header>
-                <ion-card-content>
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col size="2" class="color-container">
-                                <div class="color-box green"></div>
-                            </ion-col>
-                            <ion-col size="10" class="text-container">
-                                <div class="union">
-                                    <div class="text-container">
-                                        <ion-card-title>VERDE</ion-card-title>
-                                        <ion-card-subtitle>#00FF00</ion-card-subtitle>
-                                    </div>
-                                    <div class="icon-container">
-                                        <ion-icon name="share-social-outline" class="icon"></ion-icon>
-                                        <ion-icon name="add-circle-outline" class="icon"></ion-icon>
-                                        <ion-icon name="trash-outline" class="icon"></ion-icon>
-                                        <ion-icon name="star-outline" class="icon"></ion-icon>
-                                    </div>
-                                </div>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-                </ion-card-content>
-            </ion-card-header>
-        </ion-card>
-        
-        <ion-card class="cards">
-            <ion-card-header>
-                <ion-card-content>
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col size="2" class="color-container">
-                                <div class="color-box yellow"></div>
-                            </ion-col>
-                            <ion-col size="10" class="text-container">
-                                <div class="union">
-                                    <div class="text-container">
-                                        <ion-card-title>AMARILLO</ion-card-title>
-                                        <ion-card-subtitle>#FFFF00</ion-card-subtitle>
-                                    </div>
-                                    <div class="icon-container">
-                                        <ion-icon name="share-social-outline" class="icon"></ion-icon>
-                                        <ion-icon name="add-circle-outline" class="icon"></ion-icon>
-                                        <ion-icon name="trash-outline" class="icon"></ion-icon>
-                                        <ion-icon name="star-outline" class="icon"></ion-icon>
-                                    </div>
-                                </div>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-                </ion-card-content>
-            </ion-card-header>
-        </ion-card>
-        
-        <ion-card class="cards">
-            <ion-card-header>
-                <ion-card-content>
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col size="2" class="color-container">
-                                <div class="color-box orange"></div>
-                            </ion-col>
-                            <ion-col size="10" class="text-container">
-                                <div class="union">
-                                    <div class="text-container">
-                                        <ion-card-title>NARANJA</ion-card-title>
-                                        <ion-card-subtitle>#FFA500</ion-card-subtitle>
-                                    </div>
-                                    <div class="icon-container">
-                                        <ion-icon name="share-social-outline" class="icon"></ion-icon>
-                                        <ion-icon name="add-circle-outline" class="icon"></ion-icon>
-                                        <ion-icon name="trash-outline" class="icon"></ion-icon>
-                                        <ion-icon name="star-outline" class="icon"></ion-icon>
-                                    </div>
-                                </div>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-                </ion-card-content>
-            </ion-card-header>
-        </ion-card>
-        
-        <ion-card class="cards">
-            <ion-card-header>
-                <ion-card-content>
-                    <ion-grid>
-                        <ion-row>
-                            <ion-col size="2" class="color-container">
-                              <div class="color-box pink"></div>
-                            </ion-col>
-                            <ion-col size="10" class="text-container">
-                                <div class="union">
-                                    <div class="text-container">
-                                        <ion-card-title>ROSA PASTEL</ion-card-title>
-                                        <ion-card-subtitle>#FFB6C1</ion-card-subtitle>
-                                    </div>
-                                    <div class="icon-container">
-                                        <ion-icon name="share-social-outline" class="icon"></ion-icon>
-                                        <ion-icon name="add-circle-outline" class="icon"></ion-icon>
-                                        <ion-icon name="trash-outline" class="icon"></ion-icon>
-                                        <ion-icon name="star-outline" class="icon"></ion-icon>
-                                    </div>
-                                </div>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-                </ion-card-content>
-            </ion-card-header>
-        </ion-card>
-        
-        </ion-segment-content>
-      </div>
+              </ion-card-header>
+            </ion-card>
+          </ion-segment-content>
+        </div>
       </ion-segment-content>
 
       <!-- Mis categorías -->
       <ion-segment-content id="categorias">
         <!-- Buscador -->
-        <ion-searchbar 
-          show-clear-button="focus" 
+        <ion-searchbar
+          show-clear-button="focus"
           class="bar-custom"
-          placeholder="Buscar una categoría específica...">
+          placeholder="Buscar una categoría específica..."
+        >
         </ion-searchbar>
 
         <!-- Botón para abrir modal -->
@@ -177,25 +88,24 @@
         <!-- Acordiones -->
         <div class="accordion-container">
           <ion-accordion-group>
-            <ion-accordion 
-              *ngFor="let categoria of categorias" 
-              [value]="categoria.value" 
-              toggleIconSlot="start">
-              
+            <ion-accordion
+              *ngFor="let categoria of categorias"
+              [value]="categoria.value"
+              toggleIconSlot="start"
+            >
               <ion-item slot="header" class="flex items-center justify-between">
-                <ion-label>{{categoria.label}}</ion-label>
-                
+                <ion-label>{{ categoria.label }}</ion-label>
                 <!-- Botón de eliminar -->
-                <ion-button 
-                  fill="clear" 
-                  color="danger" 
-                  (click)="eliminarCategoria(categoria)">
+                <ion-button
+                  fill="clear"
+                  color="danger"
+                  (click)="eliminarCategoria(categoria)"
+                >
                   <ion-icon name="trash-outline"></ion-icon>
                 </ion-button>
               </ion-item>
-              
               <div class="ion-padding" slot="content">
-                {{categoria.content}}
+                {{ categoria.content }}
               </div>
             </ion-accordion>
           </ion-accordion-group>
@@ -215,13 +125,18 @@
     </ion-header>
     <ion-content>
       <ion-item>
-        <ion-label class="label-custom" position='floating'>Nombre de la nueva categoría</ion-label>
-        <ion-input class="input-custom" [(ngModel)]="nuevaCategoria"></ion-input>
+        <ion-label class="label-custom" position="floating">
+          Nombre de la nueva categoría
+        </ion-label>
+        <ion-input
+          class="input-custom"
+          [(ngModel)]="nuevaCategoria"
+        ></ion-input>
       </ion-item>
       <div class="button-container">
-      <ion-button class="crear-button" (click)="crearCategoria()">Crear</ion-button>
-      <ion-button class="cancelar-button" (click)="closeModal()">Cancelar</ion-button>
-    </div>
+        <ion-button class="crear-button" (click)="crearCategoria()">Crear</ion-button>
+        <ion-button class="cancelar-button" (click)="closeModal()">Cancelar</ion-button>
+      </div>
     </ion-content>
   </ng-template>
 </ion-modal>
