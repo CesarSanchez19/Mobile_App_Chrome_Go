@@ -1,83 +1,57 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { PerfilService } from './perfil.service';
+import { Router } from '@angular/router';
+import { PerfilService } from '../../components/perfil/perfil.service';
+import { Users } from 'src/app/interfaces/users';
 
 @Component({
   selector: 'app-perfil',
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.scss'],
-  standalone: false,
+  standalone: false
 })
 export class PerfilComponent implements OnInit {
-  profile: any;
-  profileForm!: FormGroup;
-  editMode = false;
-  profileItems: any[] = [];
+  userProfile: Users = {
+    fullName: '',
+    username: '',
+    email: '',
+    phone: '',
+    birthday: '',
+    password: '',
+    confirmPassword: ''
+  };
 
-  constructor(private perfilService: PerfilService, private fb: FormBuilder) {}
+  editing = {
+    username: false,
+    fullName: false,
+    email: false,
+    phone: false,
+    birthday: false
+  };
 
-  ngOnInit() {
-    // 1. Obtener los datos del perfil
-    this.profile = this.perfilService.getProfile();
+  emailError: string = ''; // Agregado para evitar error
+  phoneError: string = ''; // Agregado para evitar error
+  birthdayError: string = ''; // Agregado para evitar error
 
-    // 2. Luego parsear la fecha
-    const birthdate = this.profile.birthdate; // Ya viene en formato ISO del servicio
+  constructor(
+    private perfilService: PerfilService,
+    private router: Router
+  ) {}
 
-    // 3. Inicializar el formulario
-    this.profileForm = this.fb.group({
-      username: [this.profile.username, Validators.required],
-      fullName: [this.profile.fullName, Validators.required],
-      email: [this.profile.email, [Validators.required, Validators.email]],
-      phone: [this.profile.phone, Validators.required],
-      birthdate: [birthdate, Validators.required],
-    });
-
-    // 4. Inicializar profileItems (sin fecha de nacimiento)
-    this.profileItems = [
-      {
-        label: 'Correo Electrónico',
-        value: this.profile.email,
-        icon: 'mail-outline',
-      },
-      { label: 'Teléfono', value: this.profile.phone, icon: 'call-outline' },
-    ];
+  ngOnInit(): void {
+    this.loadUserProfile();
   }
 
-  formatBirthdate(dateString: string): string {
-    if (!dateString) return 'No especificada';
-    
-    // Asumimos que siempre viene en formato YYYY-MM-DD
-    const [year, month, day] = dateString.split('-').map(Number);
-    const date = new Date(year, month - 1, day);
-    
-    return date.toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
-    });
+  loadUserProfile(): void {
+    this.userProfile = { ...this.userProfile, ...this.perfilService.getProfile() };
+    console.log("✅ Perfil cargado:", this.userProfile);
   }
 
-  toggleEditMode() {
-    this.editMode = !this.editMode;
+  async saveChanges(): Promise<void> {
+    console.log("✅ Datos guardados:", this.userProfile);
   }
 
-  onDateChange(event: any) {
-    const selectedDate = event.detail.value; // Esto ya viene en formato YYYY-MM-DD
-    this.profileForm.patchValue({
-      birthdate: selectedDate
-    });
+  logout(): void {
+    localStorage.removeItem('loggedUserId');
+    this.router.navigate(['/login']);
   }
-
-  
-  saveChanges() {
-    if (this.profileForm.valid) {
-      // Usamos directamente el valor del formulario (ya está en formato correcto)
-      this.profile = {
-        ...this.profile,
-        ...this.profileForm.value
-      };
-      this.toggleEditMode();
-    }
-  }
-  
 }

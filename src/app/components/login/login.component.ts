@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Auth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from '@angular/fire/auth';
+import { AccountUserService } from '../../services/account-user.service';
+import { Users } from '../../interfaces/users';
 
 @Component({
   selector: 'app-login',
@@ -23,7 +25,8 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private auth: Auth
+    private auth: Auth,
+    private accountUserService: AccountUserService,
   ) {}
 
   ngOnInit(): void {}
@@ -31,7 +34,6 @@ export class LoginComponent implements OnInit {
   async onSubmit() {
     this.errorMessage = '';
 
-    // Validaciones locales
     if (!this.email || !this.password) {
       this.errorMessage = 'Por favor, ingresa tu correo electrónico y contraseña.';
       return;
@@ -39,10 +41,20 @@ export class LoginComponent implements OnInit {
 
     try {
       const userCredential = await signInWithEmailAndPassword(this.auth, this.email, this.password);
-      console.log('Usuario autenticado:', userCredential.user);
+      const uid = userCredential.user.uid;
+      console.log('✅ UID del usuario autenticado:', uid);
+
+      localStorage.setItem('loggedUserId', uid);
+
+      // Verificar si el usuario existe en Firestore
+      const userData = await this.accountUserService.getUser(uid);
+      if (!userData) {
+        console.warn("⚠ El usuario no tiene datos en Firestore.");
+      }
+
       this.router.navigate(['/home']);
     } catch (error: any) {
-      console.error('Error al iniciar sesión:', error);
+      console.error('❌ Error al iniciar sesión:', error);
       switch (error.code) {
         case 'auth/user-not-found':
           this.errorMessage = 'El usuario no existe.';
@@ -63,14 +75,24 @@ export class LoginComponent implements OnInit {
     try {
       const provider = new GoogleAuthProvider();
       const userCredential = await signInWithPopup(this.auth, provider);
-      console.log('Usuario autenticado con Google:', userCredential.user);
+      const uid = userCredential.user.uid;
+      console.log('✅ Usuario autenticado con Google:', uid);
+
+      localStorage.setItem('loggedUserId', uid);
+
+      // Verificar si el usuario existe en Firestore
+      const userData = await this.accountUserService.getUser(uid);
+      if (!userData) {
+        console.warn("⚠ El usuario no tiene datos en Firestore.");
+      }
+
       this.router.navigate(['/home']);
     } catch (error: any) {
-      console.error('Error al iniciar sesión con Google:', error);
+      console.error('❌ Error al iniciar sesión con Google:', error);
       this.errorMessage = 'Error al iniciar sesión con Google. Intenta nuevamente.';
     }
   }
-
+  
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
