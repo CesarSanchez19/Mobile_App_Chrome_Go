@@ -45,9 +45,9 @@
 </div>
 
 <!-- Modal para mostrar los colores extraídos -->
-<ion-modal [isOpen]="showModal" (didDismiss)="closeModal()">
+<ion-modal [isOpen]="showModal" (didDismiss)="closeModal()" cssClass="custom-modal">
   <ng-template>
-    <ion-header>
+    <ion-header color="primary">
       <ion-toolbar>
         <ion-title>Colores detectados</ion-title>
         <ion-buttons slot="end">
@@ -69,3 +69,4 @@
     </ion-content>
   </ng-template>
 </ion-modal>
+

@@ -84,6 +84,15 @@ ion-fab {
   visibility: hidden;
 }
 
+.custom-modal {
+    margin-top: 95px;
+    margin-bottom: 230px;
+  --min-width: 200px;
+  --min-height: 400px;
+  --background: #f8f8f8;
+  border-radius: 10px;
+}
+
 /* Ajustes responsive */
 @media screen and (max-width: 768px) {
   .toolbar_container {
