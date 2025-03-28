@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Platform, ToastController } from '@ionic/angular';
 import { Auth } from '@angular/fire/auth';
-import { CameraPreview, CameraPreviewOptions, CameraPreviewPictureOptions } from '@capacitor-community/camera-preview';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import ColorThief from 'colorthief';
 import { ColorService, Color } from '../../services/color.service'; // Ajusta la ruta según tu estructura
@@ -14,11 +13,11 @@ import { ColorService, Color } from '../../services/color.service'; // Ajusta la
 })
 export class InicioComponent implements OnInit, OnDestroy {
 
-  // Variables para controlar cámara web/nativa
+  // Variables para controlar cámara (se usa únicamente getUserMedia)
   stream: MediaStream | null = null;
   currentFacingMode: string = 'environment';
-  useFrontCamera: boolean = false;
   flashOn: boolean = false;
+  // Se mantiene isNative para conservar la estructura, pero se usará la lógica web en todos los casos
   isNative: boolean = false;
 
   // Datos de la imagen capturada y colores extraídos
@@ -32,28 +31,21 @@ export class InicioComponent implements OnInit, OnDestroy {
     private auth: Auth,
     private colorService: ColorService
   ) {
-    // Se considera nativo si es 'hybrid', 'android' o 'ios'
+    // Conservamos la detección, aunque ahora siempre se usará getUserMedia
     this.isNative = this.platform.is('hybrid') || this.platform.is('android') || this.platform.is('ios');
   }
 
   ngOnInit() {
-    if (this.isNative) {
-      this.startCameraPreviewNative();
-    } else {
-      this.startCameraWeb();
-    }
+    // Se elimina la lógica de CameraPreview y se usa únicamente getUserMedia
+    this.startCameraWeb();
   }
 
   ngOnDestroy() {
-    if (this.isNative) {
-      this.stopCameraPreviewNative();
-    } else {
-      this.stopCameraWeb();
-    }
+    this.stopCameraWeb();
   }
 
   // =======================================================
-  // ============== Cámara Web (getUserMedia) =============
+  // ============== Cámara (getUserMedia) ================
   // =======================================================
   startCameraWeb() {
     if (navigator.mediaDevices?.getUserMedia) {
@@ -68,10 +60,12 @@ export class InicioComponent implements OnInit, OnDestroy {
           }
         })
         .catch((err) => {
-          console.error('Error al acceder a la cámara (web):', err);
+          console.error('Error al acceder a la cámara:', err);
+          this.presentToast('Error al acceder a la cámara.');
         });
     } else {
       console.error('getUserMedia no es soportado en este navegador.');
+      this.presentToast('La cámara no está soportada en este dispositivo.');
     }
   }
 
@@ -98,120 +92,30 @@ export class InicioComponent implements OnInit, OnDestroy {
   }
 
   switchCameraWeb() {
+    // Alterna entre cámara trasera y frontal
     this.currentFacingMode = (this.currentFacingMode === 'environment') ? 'user' : 'environment';
     this.stopCameraWeb();
     this.startCameraWeb();
   }
 
   toggleFlashWeb() {
-    this.presentToast('El flash no está soportado en la versión web.');
+    // El flash no está soportado con getUserMedia; se muestra un mensaje
+    this.presentToast('El flash no está soportado en esta versión.');
   }
 
   // =======================================================
-  // ============= Cámara Nativa (Camera Preview) ==========
-  // =======================================================
-  async startCameraPreviewNative() {
-    try {
-      const cameraPermission = await Camera.checkPermissions();
-      if (cameraPermission.camera !== 'granted') {
-        const requestResult = await Camera.requestPermissions();
-        if (requestResult.camera !== 'granted') {
-          this.presentToast('Permisos de cámara denegados');
-          return;
-        }
-      }
-
-      const cameraPreviewOpts: CameraPreviewOptions = {
-        position: this.useFrontCamera ? 'front' : 'rear',
-        toBack: true,
-        parent: 'cameraPreview',
-        enableZoom: true,
-        disableExifHeaderStripping: true,
-        width: window.screen.width,
-        height: window.screen.height,
-      };
-
-      await CameraPreview.start(cameraPreviewOpts);
-      console.log('CameraPreview iniciado correctamente');
-    } catch (err) {
-      console.error('Error en startCameraPreviewNative:', err);
-      this.presentToast('Error al iniciar cámara: ' + JSON.stringify(err));
-    }
-  }
-
-  async stopCameraPreviewNative() {
-    try {
-      await CameraPreview.stop();
-    } catch (err) {
-      console.error('Error al detener CameraPreview (nativo):', err);
-    }
-  }
-
-  async capturePhotoNative() {
-    try {
-      const options: CameraPreviewPictureOptions = { quality: 90 };
-      const result = await CameraPreview.capture(options);
-      this.image = 'data:image/jpeg;base64,' + result.value;
-      console.log('Foto capturada (nativo):', this.image);
-    } catch (error) {
-      console.error('Error al capturar foto (nativo):', error);
-    }
-  }
-
-  async switchCameraNative() {
-    this.useFrontCamera = !this.useFrontCamera;
-    await this.stopCameraPreviewNative();
-    await this.startCameraPreviewNative();
-  }
-
-  async toggleFlashNative() {
-    try {
-      this.flashOn = !this.flashOn;
-      await CameraPreview.setFlashMode({ flashMode: this.flashOn ? 'on' : 'off' });
-    } catch (err) {
-      console.error('Error al cambiar flash (nativo):', err);
-      this.presentToast('El flash no está soportado en este dispositivo.');
-    }
-  }
-
-  // =======================================================
-  // ================ Botones/Acciones Comunes =============
+  // ================ Botones/Acciones Comunes ===========
   // =======================================================
   capturePhoto() {
-    if (this.isNative) {
-      this.capturePhotoNative().then(() => {
-        setTimeout(() => this.processImage(), 500);
-      });
-    } else {
-      this.capturePhotoWeb();
-      setTimeout(() => this.processImage(), 500);
-    }
+    // Se utiliza únicamente la captura web
+    this.capturePhotoWeb();
+    setTimeout(() => this.processImage(), 500);
   }
 
   openGallery() {
-    if (this.isNative) {
-      this.openGalleryNative();
-    } else {
-      const fileInput = document.getElementById('fileInput') as HTMLInputElement;
-      if (fileInput) {
-        fileInput.click();
-      }
-    }
-  }
-
-  async openGalleryNative() {
-    try {
-      const photo = await Camera.getPhoto({
-        quality: 90,
-        allowEditing: false,
-        resultType: CameraResultType.Base64,
-        source: CameraSource.Photos
-      });
-      this.image = 'data:image/jpeg;base64,' + photo.base64String;
-      console.log('Imagen seleccionada (nativo):', this.image);
-      setTimeout(() => this.processImage(), 500);
-    } catch (error) {
-      console.error('Error al seleccionar imagen (nativo):', error);
+    const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
     }
   }
 
@@ -229,19 +133,12 @@ export class InicioComponent implements OnInit, OnDestroy {
   }
 
   async toggleFlash() {
-    if (this.isNative) {
-      await this.toggleFlashNative();
-    } else {
-      this.toggleFlashWeb();
-    }
+    // Se utiliza la versión web (flash no soportado)
+    this.toggleFlashWeb();
   }
 
   async switchCamera() {
-    if (this.isNative) {
-      await this.switchCameraNative();
-    } else {
-      this.switchCameraWeb();
-    }
+    this.switchCameraWeb();
   }
 
   // =======================================================
