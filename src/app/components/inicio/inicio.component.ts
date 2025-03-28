@@ -3,7 +3,7 @@ import { Platform, ToastController } from '@ionic/angular';
 import { Auth } from '@angular/fire/auth';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import ColorThief from 'colorthief';
-import { ColorService, Color } from '../../services/color.service'; // Ajusta la ruta según tu estructura
+import { ColorService, Color } from '../../services/color.service';
 
 @Component({
   selector: 'app-inicio',
