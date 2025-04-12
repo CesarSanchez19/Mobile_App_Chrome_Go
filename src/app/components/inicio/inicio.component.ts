@@ -1,9 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Platform, ToastController } from '@ionic/angular';
 import { Auth } from '@angular/fire/auth';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import ColorThief from 'colorthief';
 import { ColorService, Color } from '../../services/color.service';
+import { colorList } from './colorList';
 
 @Component({
   selector: 'app-inicio',
@@ -197,17 +197,31 @@ export class InicioComponent implements OnInit, OnDestroy {
 
   // Asigna un nombre básico al color según su componente dominante
   getColorName(hex: string): string {
-    const r = parseInt(hex.substr(1, 2), 16);
-    const g = parseInt(hex.substr(3, 2), 16);
-    const b = parseInt(hex.substr(5, 2), 16);
-    if (r >= g && r >= b) {
-      return 'Rojo';
-    } else if (g >= r && g >= b) {
-      return 'Verde';
-    } else if (b >= r && b >= g) {
-      return 'Azul';
+    const r1 = parseInt(hex.substr(1, 2), 16);
+    const g1 = parseInt(hex.substr(3, 2), 16);
+    const b1 = parseInt(hex.substr(5, 2), 16);
+
+    let closestColor = '';
+    let minDistance = Number.MAX_VALUE;
+
+    for (const color of colorList) {
+      const r2 = parseInt(color.hex.substr(1, 2), 16);
+      const g2 = parseInt(color.hex.substr(3, 2), 16);
+      const b2 = parseInt(color.hex.substr(5, 2), 16);
+
+      const distance = Math.sqrt(
+        Math.pow(r2 - r1, 2) +
+        Math.pow(g2 - g1, 2) +
+        Math.pow(b2 - b1, 2)
+      );
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestColor = color.name;
+      }
     }
-    return 'Color';
+
+    return closestColor;
   }
 
   closeModal() {
